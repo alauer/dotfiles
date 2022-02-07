@@ -1,0 +1,114 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/usr/bin/env bash
+# shellcheck disable=SC2034,SC1090
+# shellcheck disable=SC2034,SC1090
+# Pyenv
+if [ ! -d "$HOME/.pyenv" ]; then
+    git clone https://github.com/yyuu/pyenv.git "$HOME"/.pyenv
+    git clone https://github.com/pyenv/pyenv-virtualenv.git "$HOME"/.pyenv/plugins/pyenv-virtualenv
+    git clone https://github.com/pyenv/pyenv-which-ext.git "$HOME"/.pyenv/plugins/pyenv-which-ext
+
+fi
+
+# if [ -f "$HOME/.pyenvrc" ]; then
+#     "${dir}"/install_python.zsh python/requirements.txt
+# fi
+
+sudo apt-get install -y -qq python3-pip jq
+
+sudo pip3 install apt-smart
+sudo apt-smart --auto-change-mirror
+sudo apt-get update -qq
+
+# Neovim PPA
+sudo add-apt-repository ppa:neovim-ppa/unstable
+sudo apt-get update -qq
+
+# Base
+sudo apt-get install -y -qq make build-essential cmake gfortran \
+    libatlas-base-dev python-dev python3-dev \
+    build-essential libssl-dev zlib1g-dev libbz2-dev \
+    libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \
+    libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev \
+    python-openssl git python3-pip jq vim neovim unzip zsh
+
+# Install Headers
+#sudo apt-get --yes install linux-image-extra-virtual
+
+# Oh-my-Zsh and plugins
+# chsh -s `which zsh`
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/plugins/zsh-syntax-highlighting
+
+# Powerlevel 10000 theme
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/themes/powerlevel10k
+
+# Powerline fonts
+mkdir -p "${HOME}"/.fonts
+git clone https://github.com/powerline/fonts "${HOME}"/.fonts/powerline-fonts/
+source "${HOME}"/.fonts/powerline-fonts/install.sh
+
+# Starship
+sh -c "$(curl -fsSL https://starship.rs/install.sh)"
+
+#AWS CLI
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+unzip -qq /tmp/awscliv2.zip -d /tmp/
+/tmp/aws/install -i "$HOME"/.aws-cli -b "$HOME"/bin
+{{ else if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env bash
+# Cli Tools
+xcode-select --install
+
+# HomeBrew and Casks
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew tap caskroom/cask
+brew tap caskroom/versions
+brew tap caskroom/fonts
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+
+
+# Fonts
+brew cask install font-hack-nerd-font
+
+# A good set of terminal tools
+brew install zsh
+chsh -s "$(which zsh)"
+brew install copy-ssh-id
+brew install git
+brew install git-extras
+brew install macvim
+brew install neovim
+brew install nvm
+brew install pyenv
+brew install rbenv
+brew install ruby-build
+brew install mtr
+brew install wget
+brew install fontconfig
+brew install fortune
+brew install cowsay
+brew install ansible
+
+
+# Nice apps for Dev
+brew cask install sublime-text3
+brew cask install iterm2
+brew cask install google-chrome
+brew cask install firefox
+brew cask install atom
+brew install go
+brew install azure-cli
+brew install media-info
+brew install ffmpeg --with-fdk-aac --with-libass --with-x265 --with-openjpeg --with-fontconfig --with-freetype --with-libvpx
+brew install terraform
+brew cask install google-cloud-sdk
+brew install starship
+
+# Oh My ZSH
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" --unattended --keep-zshrc
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/plugins/zsh-syntax-highlighting
+
+# Powerlevel 10000 theme
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/themes/powerlevel10k
+{{ end -}}
