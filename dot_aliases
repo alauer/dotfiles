@@ -1,0 +1,9 @@
+# Use NeoVim instead of Vim
+alias vim='nvim'
+# Pip upgrade all
+alias pip-upgrade='pip freeze --local | grep -v "^\-e" | cut -d = -f 1  | xargs -n1 pip install -U'
+# Maven Defaults (parallel setting)
+alias mvn="`which mvn` -TC1"
+# Ansible use system
+type ansible-playbook >/dev/null 2>&1 && alias ansible-playbook='pyenv exec ansible-playbook'
+type ansible >/dev/null 2>&1 && alias ansible='pyenv exec ansible'

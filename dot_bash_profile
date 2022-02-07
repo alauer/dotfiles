@@ -1,0 +1,4 @@
+# shellcheck shell=bash
+SHELL=$(which zsh)
+export SHELL
+[ -z "$ZSH_VERSION" ] && exec "$SHELL" -l
