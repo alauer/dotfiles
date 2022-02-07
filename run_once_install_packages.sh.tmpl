@@ -67,6 +67,7 @@ sh -c "$(curl -fsSL https://starship.rs/install.sh)"
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
 unzip -qq /tmp/awscliv2.zip -d /tmp/
 /tmp/aws/install -i "$HOME"/.aws-cli -b "$HOME"/bin
+exec `which zsh`
 {{ else if eq .chezmoi.os "darwin" -}}
 #!/usr/bin/env bash
 # Cli Tools
