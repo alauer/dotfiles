@@ -48,28 +48,25 @@ sudo apt-get install -y python3-pip\
     cmake \
     npm
 
-# Oh-my-Zsh and plugins
+# Oh-my-Zsh, P10k and plugins
 sudo chsh {{ .chezmoi.username }} -s `which zsh`
+
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}"/plugins/zsh-syntax-highlighting
-
-# Powerlevel 10000 theme
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}"/themes/powerlevel10k
-
-if eq .chezmoi.os "darwin" -}}
-# Powerline fonts
-mkdir -p "${HOME}"/.fonts
-git clone https://github.com/powerline/fonts "${HOME}"/.fonts/powerline-fonts/
-source "${HOME}"/.fonts/powerline-fonts/install.sh
-{{ end -}}
+fi
 
 # Starship
-sh -c "$(curl -fsSL https://starship.rs/install.sh)"
+# sh -c "$(curl -fsSL https://starship.rs/install.sh)"
 
 #AWS CLI
+if [ ! -d "$HOME/.aws-cli/v2/current" ]; then
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
 unzip -qq /tmp/awscliv2.zip -d /tmp/
 /tmp/aws/install -i "$HOME"/.aws-cli -b "$HOME"/bin
+fi
+
 exec `which zsh`
 
 {{ else if eq .chezmoi.os "darwin" -}}
@@ -128,4 +125,9 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM
 
 # Powerlevel 10000 theme
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/themes/powerlevel10k
+
+# Powerline fonts
+mkdir -p "${HOME}"/.fonts
+git clone https://github.com/powerline/fonts "${HOME}"/.fonts/powerline-fonts/
+source "${HOME}"/.fonts/powerline-fonts/install.sh
 {{ end -}}
