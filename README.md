@@ -1,6 +1,6 @@
 # chezmoi-dotfiles
 
-# ![chezmoi logo](logo-144px.svg) chezmoi
+# ![chezmoi logo](https://github.com/twpayne/chezmoi/blob/master/logo-144px.svg) chezmoi
 
 [![GitHub Release](https://img.shields.io/github/release/twpayne/chezmoi.svg)](https://github.com/twpayne/chezmoi/releases)
 
@@ -13,7 +13,12 @@ chezmoi's documentation is at [chezmoi.io](https://chezmoi.io/).
 MIT
 
 ## Setup
+[Bitwarden vault config](https://dev.to/jmc265/using-bitwarden-and-chezmoi-to-manage-ssh-keys-5hfm)
 
 ```bash
+sudo snap install bw
+bw login <EMAIL-ADDRESS>
+bw unlock
+export BW_SESSION="<SESSION-ID>"
 sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply git@gitlab.com:alauer/chezmoi-dotfiles.git
 ```
