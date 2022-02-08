@@ -15,15 +15,9 @@ MIT
 ## Setup
 [Bitwarden vault config](https://dev.to/jmc265/using-bitwarden-and-chezmoi-to-manage-ssh-keys-5hfm)
 
-```bash
-sudo snap install bw
-bw login <EMAIL-ADDRESS>
-bw unlock
-export BW_SESSION="<SESSION-ID>"
-```
-OR
 
 ```bash
+sudo apt install npm
 sudo npm install -g @bitwarden/cli
 bw login <EMAIL-ADDRESS>
 bw unlock
