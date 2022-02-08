@@ -24,3 +24,8 @@ sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply https://gitlab.com/alauer/c
 ```
 ## Pyenv Commands
 https://github.com/pyenv/pyenv/blob/master/COMMANDS.md
+
+## To make dotfiles changes in Chezmoi
+```bash
+chezmoi git remote set-url origin git@gitlab.com:alauer/chezmoi-dotfiles.git
+```
