@@ -1,7 +1,5 @@
 # chezmoi-dotfiles
 
-# ![chezmoi logo](https://github.com/twpayne/chezmoi/blob/master/logo-144px.svg) chezmoi
-
 [![GitHub Release](https://img.shields.io/github/release/twpayne/chezmoi.svg)](https://github.com/twpayne/chezmoi/releases)
 
 Manage your dotfiles across multiple diverse machines, securely.
@@ -27,3 +25,5 @@ export BW_SESSION="<SESSION-ID>"
 ```bash
 sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply https://gitlab.com/alauer/chezmoi-dotfiles.git
 ```
+##Pyenv Commands
+https://github.com/pyenv/pyenv/blob/master/COMMANDS.md
