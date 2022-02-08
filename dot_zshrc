@@ -36,4 +36,5 @@ source ~/.functions.sh
 
 # Source aliases
 source ~/.aliases
+cd $HOME
 eval "$(pyenv init -)"
