@@ -56,10 +56,12 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM
 # Powerlevel 10000 theme
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}"/themes/powerlevel10k
 
+if eq .chezmoi.os "darwin" -}}
 # Powerline fonts
 mkdir -p "${HOME}"/.fonts
 git clone https://github.com/powerline/fonts "${HOME}"/.fonts/powerline-fonts/
 source "${HOME}"/.fonts/powerline-fonts/install.sh
+{{ end -}}
 
 # Starship
 sh -c "$(curl -fsSL https://starship.rs/install.sh)"
@@ -69,6 +71,7 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv
 unzip -qq /tmp/awscliv2.zip -d /tmp/
 /tmp/aws/install -i "$HOME"/.aws-cli -b "$HOME"/bin
 exec `which zsh`
+
 {{ else if eq .chezmoi.os "darwin" -}}
 #!/usr/bin/env bash
 # Cli Tools
