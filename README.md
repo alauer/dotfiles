@@ -20,5 +20,5 @@ sudo snap install bw
 bw login <EMAIL-ADDRESS>
 bw unlock
 export BW_SESSION="<SESSION-ID>"
-sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply git@gitlab.com:alauer/chezmoi-dotfiles.git
+sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply https://gitlab.com/alauer/chezmoi-dotfiles.git
 ```

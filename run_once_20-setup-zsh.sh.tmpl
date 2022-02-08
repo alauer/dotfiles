@@ -20,8 +20,6 @@ unzip -qq /tmp/awscliv2.zip -d /tmp/
 /tmp/aws/install -i "$HOME"/.aws-cli -b "$HOME"/bin
 fi
 
-exec `which zsh`
-
 {{ else if eq .chezmoi.os "darwin" -}}
 # Oh My ZSH
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" --unattended --keep-zshrc
