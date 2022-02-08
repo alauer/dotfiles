@@ -24,7 +24,7 @@ export BW_SESSION="<SESSION-ID>"
 OR
 
 ```bash
-npm install -g @bitwarden/cli
+sudo npm install -g @bitwarden/cli
 bw login <EMAIL-ADDRESS>
 bw unlock
 export BW_SESSION="<SESSION-ID>"
