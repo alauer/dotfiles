@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+[ -e "${HOME}/.zshenv" ] && source "${HOME}/.zshenv"
+[ -e "${HOME}/.zprofile" ] && source "${HOME}/.zprofile"
+[ -e "${HOME}/.zshrc" ] && source "${HOME}/.zshrc"
+
+# Latest Python
+latest=`pyenv install -l | egrep '^[[:space:]]+[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+$' | tail -1 | xargs echo`
+pyenv install 3.10.2
+pyenv global 3.10.2
+pyenv shell 3.10.2
