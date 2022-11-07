@@ -2,3 +2,5 @@
 SHELL=$(which zsh)
 export SHELL
 [ -z "$ZSH_VERSION" ] && exec "$SHELL" -l
+
+eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
