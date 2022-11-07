@@ -2,7 +2,7 @@
 
 set -eu
 
-{{ if eq .chezmoi.os "linux" -}}
+# {{ if eq .chezmoi.os "linux" -}}
 # curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
 #  sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
 
@@ -24,9 +24,9 @@ ARCH="<amd64>" && \
     sudo mv op/op /usr/local/bin && \
     rm -r op.zip op
 
-{{ else if eq .chezmoi.os "darwin" -}}
-brew install --cask 1password/tap/1password-cli
-{{ end -}}
+# {{ else if eq .chezmoi.os "darwin" -}}
+# brew install --cask 1password/tap/1password-cli
+# {{ end -}}
 
 op account add --address the-lauer-family.1password.com --email lauer.aaron@gmail.com
 eval $(op signin --account the-lauer-family)
