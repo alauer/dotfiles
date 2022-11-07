@@ -18,15 +18,15 @@ set -eu
 
 # sudo apt update && sudo apt install 1password-cli
 
-ARCH="amd64" && \
-    wget "https://cache.agilebits.com/dist/1P/op2/pkg/v2.7.3/op_linux_${ARCH}_v2.7.3.zip" -O op.zip && \
-    unzip -d op op.zip && \
-    sudo mv op/op /usr/local/bin && \
-    rm -r op.zip op
+# ARCH="amd64" && \
+#     wget "https://cache.agilebits.com/dist/1P/op2/pkg/v2.7.3/op_linux_${ARCH}_v2.7.3.zip" -O op.zip && \
+#     unzip -d op op.zip && \
+#     sudo mv op/op /usr/local/bin && \
+#     rm -r op.zip op
 
-# {{ else if eq .chezmoi.os "darwin" -}}
-# brew install --cask 1password/tap/1password-cli
-# {{ end -}}
+# # {{ else if eq .chezmoi.os "darwin" -}}
+# # brew install --cask 1password/tap/1password-cli
+# # {{ end -}}
 
-op account add --address the-lauer-family.1password.com --email lauer.aaron@gmail.com
-eval $(op signin --account the-lauer-family.1password.com)
+# op account add --address the-lauer-family.1password.com --email lauer.aaron@gmail.com
+# eval $(op signin --account the-lauer-family.1password.com)
