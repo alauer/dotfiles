@@ -18,7 +18,7 @@ set -eu
 
 # sudo apt update && sudo apt install 1password-cli
 
-ARCH="<amd64>" && \
+ARCH="amd64" && \
     wget "https://cache.agilebits.com/dist/1P/op2/pkg/v2.7.3/op_linux_${ARCH}_v2.7.3.zip" -O op.zip && \
     unzip -d op op.zip && \
     sudo mv op/op /usr/local/bin && \
