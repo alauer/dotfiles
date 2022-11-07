@@ -29,4 +29,4 @@ ARCH="amd64" && \
 # {{ end -}}
 
 op account add --address the-lauer-family.1password.com --email lauer.aaron@gmail.com
-eval $(op signin --account the-lauer-family)
+eval $(op signin --account the-lauer-family.1password.com)
