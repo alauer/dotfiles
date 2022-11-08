@@ -12,13 +12,14 @@ sudo apt-get update -qq
 sudo apt-get install -y build-essential\
     git \
     file \
-    curl \
+    curl
 
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
 test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
 test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-brew install age
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+/home/linuxbrew/.linuxbrew/bin/brew install age
 
 {{ end }}
 
