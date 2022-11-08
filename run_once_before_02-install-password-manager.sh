@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# shellcheck disable=SC2034,SC1090
 set -eu
 
 # {{ if eq .chezmoi.os "linux" -}}
