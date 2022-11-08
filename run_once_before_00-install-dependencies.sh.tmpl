@@ -11,25 +11,11 @@ brew install age
 sudo apt-get update -qq
 sudo apt-get install build-essential procps curl file git
 
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> "${HOME}/.profile"
-
-if [ -d "/home/linuxbrew/.linuxbrew/bin" ] ; then
-    PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-fi
-
-echo 'PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' >> "${HOME}/.profile"
-echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> "${HOME}/.profile"
-echo 'PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' >> "${HOME}/.bash_profile"
-echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> "${HOME}/.bash_profile"
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
-if [ -d "/home/linuxbrew/.linuxbrew/bin" ] ; then
-    export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-fi
-
-brew install age
-
+AGE_VERSION=$(curl -s "https://api.github.com/repos/FiloSottile/age/releases/latest" | grep -Po '"tag_name": "v\K[0-9.]+')
+curl -Lo age.tar.gz "https://github.com/FiloSottile/age/releases/latest/download/age-v${AGE_VERSION}-linux-amd64.tar.gz"
+tar xf age.tar.gz
+sudo mv age/age /usr/local/bin
+sudo mv age/age-keygen /usr/local/bin
+rm -r age.tar.gz age
 {{ end }}
 
