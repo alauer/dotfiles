@@ -21,7 +21,8 @@ test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/bre
 test -r ~/.bash_profile && echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> "${HOME}/.bash_profile"
 echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> "${HOME}/.profile"
 
-/bin/bash -c "brew install age"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+brew install age
 
 {{ end }}
 
