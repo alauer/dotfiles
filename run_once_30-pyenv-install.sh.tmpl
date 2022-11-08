@@ -6,6 +6,6 @@
 
 # Latest Python
 latest=`pyenv install -l | egrep '^[[:space:]]+[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+$' | tail -1 | xargs echo`
-pyenv install ${latest}
-pyenv virtualenv ${latest} aaron
+pyenv install 3.10.8
+pyenv virtualenv 3.10.8 aaron
 pyenv shell aaron
