@@ -1,3 +1,9 @@
 #!/usr/bin/env zsh
 # shellcheck disable=SC2034,SC1090
+if [ ! -d "$HOME/.pyenv/plugins/pyenv-update" ]; then
+    git clone https://github.com/pyenv/pyenv-update.git "$HOME"/.pyenv/plugins/pyenv-update
+fi
+if [ ! -d "$HOME/.oh-my-zsh/plugins/ohmyzsh-full-autoupdate" ]; then
+git clone https://github.com/Pilaton/OhMyZsh-full-autoupdate.git ${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/ohmyzsh-full-autoupdate
+fi
 pyenv update
