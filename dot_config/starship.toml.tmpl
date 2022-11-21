@@ -1,3 +1,13 @@
+format = """
+[\uE0B6](fg:#1C4961)[$directory](bg:#1C4961)[\uE0B0](fg:#1C4961 bg:#2F79A1)$git_branch[\uE0B0](fg:#2F79A1 bg:#3A95C7)$git_status[\uE0B0](#3A95C7 bg:#40A9E0)$time[\uE0B0](#40A9E0 bg:none) $all$character """
+
+add_newline = true
+
+[time]
+disabled = false
+format = "[ $time ]($style)"
+style = "bg:#40A9E0 fg:white"
+
 [aws]
 symbol = "  "
 style = "bold #ffb86c"
@@ -16,7 +26,7 @@ symbol = " "
 
 [directory]
 read_only = " "
-style = "bold #50fa7b"
+style = "bg:#1C4961 fg:white"
 
 [docker_context]
 symbol = " "
@@ -29,7 +39,8 @@ symbol = " "
 
 [git_branch]
 symbol = " "
-style = "bold #ff79c6"
+format = "[ $symbol$branch ]($style)"
+style = "bg:#2F79A1 fg:white"
 
 [golang]
 symbol = " "
@@ -93,7 +104,8 @@ success_symbol = "[λ](bold #50fa7b)"
 style = "bold #f1fa8c"
 
 [git_status]
-style = "bold #ff5555"
+format = "[ $all_status$ahead_behind ]($style)"
+style = "bg:#3A95C7 fg:white"
 
 [hostname]
 style = "bold #bd93f9"
