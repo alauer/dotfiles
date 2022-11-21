@@ -1,8 +1,8 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 # shellcheck shell=bash
-[ -e "${HOME}/.zshenv" ] && source "${HOME}/.zshenv"
-[ -e "${HOME}/.zprofile" ] && source "${HOME}/.zprofile"
-[ -e "${HOME}/.zshrc" ] && source "${HOME}/.zshrc"
+# [ -e "${HOME}/.zshenv" ] && source "${HOME}/.zshenv"
+# [ -e "${HOME}/.zprofile" ] && source "${HOME}/.zprofile"
+# [ -e "${HOME}/.zshrc" ] && source "${HOME}/.zshrc"
 
 # Latest Python
 latest=$(pyenv install -l | grep -E '^[[:space:]]+[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+$' | tail -1 | xargs echo)
