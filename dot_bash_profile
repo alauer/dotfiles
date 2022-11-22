@@ -1,6 +1,15 @@
 # shellcheck shell=bash
-SHELL=$(which zsh)
-export SHELL
-[ -z "$ZSH_VERSION" ] && exec "$SHELL" -l
 
-eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+# SHELL=$(which zsh)
+# export SHELL
+# [ -z "$ZSH_VERSION" ] && exec "$SHELL" -l
+
+# Source functions
+source ~/.functions.sh
+
+# Source aliases
+source ~/.aliases
+
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
