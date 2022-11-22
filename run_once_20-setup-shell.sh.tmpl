@@ -6,7 +6,7 @@
 sudo chsh {{ .chezmoi.username }} -s `which fish`
 
 # Starship
-# sh -c "$(curl -fsSL https://starship.rs/install.sh)"
+sh -c "$(curl -fsSL https://starship.rs/install.sh)"
 
 #AWS CLI
 if [ ! -d "$HOME/.aws-cli/v2/current" ]; then
