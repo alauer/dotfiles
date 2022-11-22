@@ -9,7 +9,7 @@ chezmoi's documentation is at [chezmoi.io](https://chezmoi.io/).
 MIT
 
 ```bash
-sh -c "$(curl -fsLS chezmoi.io/get)" -- init --branch fish-devel https://gitlab.com/alauer/chezmoi-dotfiles.git
+sh -c "$(curl -fsLS chezmoi.io/get)" -- init --branch fish https://gitlab.com/alauer/chezmoi-dotfiles.git
 ```
 ## Pyenv Commands
 https://github.com/pyenv/pyenv/blob/master/COMMANDS.md
