@@ -6,7 +6,7 @@
 sudo chsh {{ .chezmoi.username }} -s `which fish`
 
 # Starship
-sh -c "$(curl -fsSL https://starship.rs/install.sh)" -y -b $HOME/bin
+sh -c "$(curl -fsSL https://starship.rs/install.sh)" -f -y -b $HOME/bin
 
 #EXA
 EXA_VERSION=$(curl -s "https://api.github.com/repos/ogham/exa/releases/latest" | grep -Po '"tag_name": "v\K[0-9.]+')
