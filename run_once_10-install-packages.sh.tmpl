@@ -41,52 +41,40 @@ sudo apt-get install -y python3-pip\
     unzip \
     cmake
 
+
 {{ else if eq .chezmoi.os "darwin" -}}
 #!/usr/bin/env bash
-# Cli Tools
-xcode-select --install
 
-# HomeBrew and Casks
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-brew tap caskroom/cask
-brew tap caskroom/versions
-brew tap caskroom/fonts
-export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+brew bundle --no-lock --file=/dev/stdin <<EOF
+tap "homebrew/cask"
+tap "homebrew/cask-versions"
+tap "homebrew/cask-fonts"
+cask_args appdir: "~/Applications", require_sha: true
+brew "git"
+brew "pyenv"
+brew "exa"
+brew "fish"
+brew "ssh-copy-id"
+brew "git"
+brew "git-extras"
+brew "macvim"
+brew "neovim"
+brew "jq"
+brew "wget"
+brew "fortune"
+brew "cowsay"
+brew "ansible"
+brew "awscli"
+brew "starship"
+brew "terraform"
+cask "font-meslo-lg-nerd-font"
+cask "iterm2"
+cask "sublime-text"
+EOF
 
-
-# Fonts
-brew cask install font-hack-nerd-font
-
-# A good set of terminal tools
-brew install fish
-brew install copy-ssh-id
-brew install git
-brew install git-extras
-brew install macvim
-brew install neovim
-brew install nvm
-brew install pyenv
-brew install rbenv
-brew install ruby-build
-brew install mtr
-brew install wget
-brew install fontconfig
-brew install fortune
-brew install cowsay
-brew install ansible
-
-
-# Nice apps for Dev
-brew cask install sublime-text3
-brew cask install iterm2
-brew cask install google-chrome
-brew cask install firefox
-brew cask install atom
-brew install go
-brew install media-info
-brew install ffmpeg --with-fdk-aac --with-libass --with-x265 --with-openjpeg --with-fontconfig --with-freetype --with-libvpx
-brew install terraform
-brew cask install google-cloud-sdk
-brew install starship
-
+if [ ! -d "$HOME/.pyenv/plugins" ]; then
+    git clone https://github.com/pyenv/pyenv-virtualenv.git "$HOME"/.pyenv/plugins/pyenv-virtualenv
+    git clone https://github.com/pyenv/pyenv-which-ext.git "$HOME"/.pyenv/plugins/pyenv-which-ext
+    git clone https://github.com/pyenv/pyenv-update.git "$HOME"/.pyenv/plugins/pyenv-update
+fi
 {{ end -}}

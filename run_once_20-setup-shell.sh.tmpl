@@ -28,10 +28,6 @@ fi
 sudo bash -c 'echo $(which fish) >> /etc/shells'
 chsh -s $(which fish)
 
-#AWS CLI
-curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "/tmp/AWSCLIV2.pkg"
-sudo installer -pkg /tmp/AWSCLIV2.pkg -target /
-
 # Powerline fonts
 mkdir -p "${HOME}"/.fonts
 git clone https://github.com/powerline/fonts "${HOME}"/.fonts/powerline-fonts/

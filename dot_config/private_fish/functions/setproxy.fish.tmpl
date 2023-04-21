@@ -1,0 +1,7 @@
+function setproxy
+    # machine-specific configuration for Amdocs laptop
+{{- if eq .chezmoi.hostname "aaronla02-mac" }}
+    set -gx http_proxy 'http://genproxy.corp.amdocs.com:8080/'
+    set -gx https_proxy 'http://genproxy.corp.amdocs.com:8080/'
+{{- end }}
+end

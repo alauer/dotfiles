@@ -1,1 +1,4 @@
 key.txt.age
+{{- if ne .chezmoi.os "darwin" }}
+iterm-profile.json
+{{- end }}

@@ -1,9 +1,21 @@
 set -gx PYENV_ROOT $HOME/.pyenv
 
-source (pyenv init - | psub)
-starship init fish | source
+{{ if eq .chezmoi.os "linux" -}}
 alias ls="$HOME/bin/exa"
+set PATH $HOME/bin $PYENV_ROOT/bin $HOME/local/bin $PATH
+{{ else if eq .chezmoi.os "darwin" -}}
+alias ls='exa'
+set PATH $HOME/bin /opt/homebrew/bin $PATH
+{{ end }}
+pyenv init - | source
+starship init fish | source
 alias vi='nvim'
 alias vim='nvim'
 # Microk8s
 alias kubectl='microk8s kubectl'
+
+# machine-specific configuration for Amdocs laptop
+{{- if eq .chezmoi.hostname "aaronla02-mac" }}
+set -gx http_proxy 'http://genproxy.corp.amdocs.com:8080/'
+set -gx https_proxy 'http://genproxy.corp.amdocs.com:8080/'
+{{- end }}

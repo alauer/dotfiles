@@ -7,10 +7,15 @@ chezmoi's documentation is at [chezmoi.io](https://chezmoi.io/).
 ## License
 
 MIT
+For MacOs, install Homebrew first.
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
 ```bash
 sh -c "$(curl -fsLS chezmoi.io/get)" -- init https://gitlab.com/alauer/chezmoi-dotfiles.git
 ```
+
 ## Pyenv Commands
 https://github.com/pyenv/pyenv/blob/master/COMMANDS.md
 
