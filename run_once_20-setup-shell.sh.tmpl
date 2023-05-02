@@ -23,12 +23,34 @@ fi
 
 #MacOS Specific
 {{ else if eq .chezmoi.os "darwin" -}}
+{{ if eq .email "aaronla@amdocs.com" -}}
+cat <<EOF | sudo tee /etc/sudoers.d/proxy >/dev/null
+Defaults  env_keep += "http_proxy"
+Defaults  env_keep += "https_proxy"
+Defaults  env_keep += "all_proxy"
+Defaults  env_keep += "no_proxy"
+Defaults  env_keep += "no_http_proxy"
+Defaults  env_keep += "ftp_proxy"
+Defaults  env_keep += "HTTP_PROXY"
+Defaults  env_keep += "HTTPS_PROXY"
+Defaults  env_keep += "ALL_PROXY"
+Defaults  env_keep += "NO_PROXY"
+Defaults  env_keep += "FTP_PROXY"
+EOF
+
+export no_proxy=.amdocs.com,$no_proxy
+curl -kSs https://gitlab.corp.amdocs.com/ansible-roles/image-template/raw/master/files/profile_proxy.sh >/tmp/proxy.sh
+. /tmp/proxy.sh
+proxy install  # for install in /etc/profile.d/
+mv ~/.proxyrc ~/.proxyrc.USE_PROXY_COMMAND_INSTEAD 2>/dev/null || true
+
+{{ end -}}
 
 #Set Shell
 chsh -s $(which zsh)
 
 # Powerline fonts
-mkdir -p "${HOME}"/.fonts
-git clone https://github.com/powerline/fonts "${HOME}"/.fonts/powerline-fonts/
-source "${HOME}"/.fonts/powerline-fonts/install.sh
+#mkdir -p "${HOME}"/.fonts
+#git clone https://github.com/powerline/fonts "${HOME}"/.fonts/powerline-fonts/
+#source "${HOME}"/.fonts/powerline-fonts/install.sh
 {{ end -}}
