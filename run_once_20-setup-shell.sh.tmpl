@@ -2,7 +2,7 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2034,SC1090
 {{ if eq .chezmoi.os "linux" -}}
-# Oh-my-Zsh, P10k and plugins
+
 sudo chsh {{ .chezmoi.username }} -s `which fish`
 
 # Starship
