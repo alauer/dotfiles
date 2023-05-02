@@ -1,4 +1,10 @@
 key.txt.age
 {{- if ne .chezmoi.os "darwin" }}
 iterm-profile.json
+{{- if ne .email "aaronla@amdocs.com" }}
+dot_zprofile.tmpl
+dot_zshenv
+dot_zshrc
+dot_profile
+{{- end }}
 {{- end }}
