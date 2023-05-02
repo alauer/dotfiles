@@ -24,8 +24,7 @@ fi
 #MacOS Specific
 {{ else if eq .chezmoi.os "darwin" -}}
 
-#Fish Shell
-sudo bash -c 'echo $(which fish) >> /etc/shells'
+#Set Shell
 chsh -s $(which zsh)
 
 # Powerline fonts
