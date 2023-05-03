@@ -23,7 +23,7 @@ fi
 {{ if eq .chezmoi.os "darwin" -}}
 PATH="/opt/homebrew/bin:$PATH"
 {{ if eq .email "aaronla@amdocs.com" -}}
-if [ -f "/etc/profile_proxy.sh" ]
+if [ -f "/etc/profile_proxy.sh" ] ; then
     . /etc/profile_proxy.sh
 fi
 {{ end -}}
