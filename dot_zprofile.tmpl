@@ -24,7 +24,7 @@ fi
 PATH="/opt/homebrew/bin:$PATH"
 {{ if eq .email "aaronla@amdocs.com" -}}
 if [ -f "/etc/profile_proxy.sh" ]
-. /etc/profile_proxy.sh
+    . /etc/profile_proxy.sh
 fi
 {{ end -}}
 {{ end -}}
