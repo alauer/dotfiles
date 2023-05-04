@@ -3,9 +3,9 @@
 	email = {{ .email | quote }}
 {{ if eq .email "aaronla@amdocs.com" -}}
 [http]
-    sslVerify = false
-    proxy = "http://genproxy.corp.amdocs.com:8080"
+	sslVerify = false
+	proxy = "http://genproxy.corp.amdocs.com:8080"
 [https]
-    sslVerify = false
+	sslVerify = false
 	proxy = "http://genproxy.corp.amdocs.com:8080"
 {{ end -}}
