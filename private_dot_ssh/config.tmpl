@@ -1,0 +1,24 @@
+Include /Users/aaronla/.colima/ssh_config
+
+Host ubuntu-dev
+    Hostname 192.168.11.151
+    User aaron
+    ForwardAgent yes
+
+{{ if eq .email "aaronla@amdocs.com" -}}
+Host bitbucket.org
+    Hostname altssh.bitbucket.org
+    Port 443
+    ServerAliveInterval 55
+    ForwardAgent yes
+    User git
+    ProxyCommand corkscrew indfgdiaproxy.corp.amdocs.com 8080 %h %p
+
+Host gitlab.com
+    Hostname altssh.gitlab.com
+    Port 443
+    ServerAliveInterval 55
+    ForwardAgent yes
+    User git
+    ProxyCommand corkscrew indfgdiaproxy.corp.amdocs.com 8080 %h %p    
+{{ end -}}
