@@ -12,6 +12,7 @@ Host bitbucket.org
     ServerAliveInterval 55
     ForwardAgent yes
     User git
+    IdentityFile ~/.ssh/id_rsa
     ProxyCommand corkscrew indfgdiaproxy.corp.amdocs.com 8080 %h %p
 
 Host gitlab.com
@@ -20,5 +21,6 @@ Host gitlab.com
     ServerAliveInterval 55
     ForwardAgent yes
     User git
+    IdentityFile ~/.ssh/id_rsa
     ProxyCommand corkscrew indfgdiaproxy.corp.amdocs.com 8080 %h %p    
 {{ end -}}
