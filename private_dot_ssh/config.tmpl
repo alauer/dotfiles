@@ -19,8 +19,19 @@ Host gitlab.com
     Hostname altssh.gitlab.com
     Port 443
     ServerAliveInterval 55
+    PreferredAuthentications publickey
     ForwardAgent yes
     User git
     IdentityFile ~/.ssh/id_rsa
     ProxyCommand corkscrew indfgdiaproxy.corp.amdocs.com 8080 %h %p    
+
+Host github.com
+    Hostname ssh.github.com
+    Port 443
+    ServerAliveInterval 55
+    PreferredAuthentications publickey
+    ForwardAgent yes
+    User git
+    IdentityFile ~/.ssh/id_rsa
+    ProxyCommand corkscrew indfgdiaproxy.corp.amdocs.com 8080 %h %p 
 {{ end -}}
