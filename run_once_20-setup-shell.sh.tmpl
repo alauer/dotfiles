@@ -9,10 +9,11 @@ sudo chsh {{ .chezmoi.username }} -s `which fish`
 sh -c "$(curl -fsSL https://starship.rs/install.sh)" -f -y -b $HOME/bin
 
 #EXA
+if [ ! -f "/usr/bin/exa" ]; then
 EXA_VERSION=$(curl -s "https://api.github.com/repos/ogham/exa/releases/latest" | grep -Po '"tag_name": "v\K[0-9.]+')
 curl -Lo /tmp/exa.zip "https://github.com/ogham/exa/releases/latest/download/exa-linux-x86_64-v${EXA_VERSION}.zip"
 unzip -q /tmp/exa.zip bin/exa -d "$HOME"
-
+fi
 
 #AWS CLI
 if [ ! -d "$HOME/.aws-cli/v2/current" ]; then
