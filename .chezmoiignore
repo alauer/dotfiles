@@ -9,3 +9,4 @@ dot_profile
 {{- end }}
 {{- end }}
 .gitignore
+compose-dev.yaml
