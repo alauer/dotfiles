@@ -1,5 +1,7 @@
 services:
   app:
+    environment:
+    - DOCKER_DEFAULT_PLATFORM=linux/amd64
     entrypoint:
     - sleep
     - infinity
