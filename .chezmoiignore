@@ -6,6 +6,7 @@ dot_zprofile.tmpl
 dot_zshenv
 dot_zshrc
 dot_profile
+dot_config/private_fish/proxy.fish
 {{- end }}
 {{- end }}
 .gitignore

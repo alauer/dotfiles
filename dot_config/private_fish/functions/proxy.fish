@@ -278,3 +278,78 @@ function proxy_os_configs_auto
     proxy_os_configs_off
   end
 end
+
+function proxy_os_configs_on
+  echo "$funcname$argv:"
+  if test -s /etc/bashrc_Apple_Terminal
+    # MacOS
+    echo "Advanced support of MacOS is not yet there, PRs welcome."
+  else
+    # Linux
+    switch (grep ID_LIKE /etc/os-release | cut -d"=" -f2 | tr -d '"' )
+    case debian
+        debian_machine_wide_proxy_on
+        debian_snap_proxy_on
+        debian_software_manager_gui_on
+        debian_nat_dns_search_domain_smart_on
+        docker_proxy_on
+    case fedora
+        echo "RHEL/fedora based are partially supported yet. PRs welcome"
+    case '*'
+        echo "You see to run a cool OS, but not supported yet. PRs welcome"
+    end
+  end
+end
+
+function proxy_os_configs_off
+echo "$funcname$argv:"
+  switch (grep ID_LIKE /etc/os-release 2>/dev/null | cut -d"=" -f2 | tr -d '"' )
+  case debian
+      debian_machine_wide_proxy_off
+      debian_snap_proxy_off
+      debian_software_manager_gui_off
+      debian_nat_dns_search_domain_smart_off
+      docker_proxy_off
+  case fedora
+      echo "RHEL/fedora based are not supported yet. PRs welcome"
+  case *
+      echo "You see to run a cool OS, but not supported yet. PRs welcome"
+  end
+end
+
+function proxy_install_in_profile_auto
+echo "$funcname$argv:"
+  if test (is_proxy_reachable) -eq "1"
+      proxy_install_in_profile_on
+  else
+      echo "proxy_install_in_profile failed, please retry when connected to amdocs network and ping genproxy works "
+  end
+end
+
+function proxy_install_in_profile_on
+  echo "$funcname$argv:"
+  set WGET_EXISTS (if type -q wget; echo 1; else; echo 0; end)
+  set -x no_proxy "$no_proxy:-localhost,gitlab.corp.amdocs.com"
+  export NO_PROXY="${NO_PROXY:-localhost},gitlab.corp.amdocs.com"
+  if [ $WGET_EXISTS -gt "0" ]; then
+    \rm -f /tmp/profile_proxy.sh 2>/dev/null || true
+    wget --quiet --no-check-certificate --tries=1 --timeout=2 -O /tmp/profile_proxy.sh https://gitlab.corp.amdocs.com/ansible-roles/image-template/raw/master/files/profile_proxy.sh
+  else
+    curl -k -Sso /tmp/profile_proxy.sh https://gitlab.corp.amdocs.com/ansible-roles/image-template/raw/master/files/profile_proxy.sh
+  end
+  if [ -s /tmp/profile_proxy.sh ]; then
+    . /tmp/profile_proxy.sh
+    if [ \( -s /etc/bashrc_Apple_Terminal \) -a \( -s /etc/profile \) ]; then
+      # MacOS
+      sudo mv -f /tmp/profile_proxy.sh /etc/profile_proxy.sh
+      echo ". /etc/profile_proxy.sh" | sudo tee -a /etc/zprofile >/dev/null
+      echo ". /etc/profile_proxy.sh" | sudo tee -a /etc/profile >/dev/null
+    else
+      # Linux
+      sudo mv -f /tmp/profile_proxy.sh /etc/profile.d/profile_proxy.sh
+    end
+  else
+    echo "could not download https://gitlab.corp.amdocs.com/ansible-roles/image-template/raw/master/files/profile_proxy.sh "
+    #"; going to exit" && return 77 # removing this as we will have proxy auto after config. And we want to have the vars set even when this download fails.
+  end
+end
