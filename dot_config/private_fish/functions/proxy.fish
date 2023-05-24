@@ -50,26 +50,26 @@ end
 
 ## Test if the selected proxy is reachable
 function is_proxy_reachable
-  set PROXY_IS_REACHABLE 0
-  set DIG_PARAMS " " # not working in ZSH
-  # NC_PARAMS="-v -4 -w2 -z" #not working in zsh
+set PROXY_IS_REACHABLE 0
+set DIG_PARAMS " " # not working in ZSH
+  #NC_PARAMS="-v -4 -w2 -z" #not working in zsh
   #PROXY_URL=$(set +eu ; echo ${1:-"genproxy.corp.amdocs.com:8080"} ) #removed
   #moving from genproxy to 10.x. as sometimes the DNS resolving does not work...
+set ARG1 (set +eu ; echo $argv[1]"x")
 
-  set ARG1 (set +eu ; echo $1"x" )
-  if [ "${ARG1}" = "x" ] ; then
+if test "${ARG1}" != "x"
     ## Backup solution, when is_proxy_reachable is called without a param
-    if [ \( $(is_wsl) -eq "1" \) ]; then
-        export PINGHOSTIP="wslproxy.corp.amdocs.com"
-    else
-        export PINGHOSTIP="10.232.233.70" # aka "genproxy.corp.amdocs.com" ISR
-        DIG_PARAMS=" -x " # not working in zsh...
-    fi
-  fi
+if test is_wsl = "1"
+    set PINGHOSTIP "wslproxy.corp.amdocs.com"
+else
+    set PINGHOSTIP "10.24.1.121" # aka "genproxy.corp.amdocs.com" ISR
+    set DIG_PARAMS " -x " # not working in zsh...
+end
+end
 
   ###export PINGHOSTIP="${1}:8080" # not always IP, param could come also as a name to be resolved...
 
-  PROXY_URL=$(set +eu ; echo ${1:-"$PINGHOSTIP:8080"} )
+  set PROXY_URL (set +eu ; echo ${1:-"$PINGHOSTIP:8080"} )
   PROXY_HOST=$(echo $PROXY_URL | cut -d":" -f1 )
   PROXY_PORT=$(echo $PROXY_URL | cut -d":" -f2 )
   ## test if genproxycan be reached
