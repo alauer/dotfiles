@@ -55,70 +55,226 @@ set DIG_PARAMS " " # not working in ZSH
   #NC_PARAMS="-v -4 -w2 -z" #not working in zsh
   #PROXY_URL=$(set +eu ; echo ${1:-"genproxy.corp.amdocs.com:8080"} ) #removed
   #moving from genproxy to 10.x. as sometimes the DNS resolving does not work...
-set ARG1 (set +eu ; echo $argv[1]"x")
+set ARG1 (echo $argv[1]"x")
 
-if test "${ARG1}" != "x"
+if test $ARG1 != "x"
     ## Backup solution, when is_proxy_reachable is called without a param
 if test is_wsl = "1"
-    set PINGHOSTIP "wslproxy.corp.amdocs.com"
+    set -x PINGHOSTIP "wslproxy.corp.amdocs.com"
 else
-    set PINGHOSTIP "10.24.1.121" # aka "genproxy.corp.amdocs.com" ISR
+    set -x PINGHOSTIP "10.24.1.121" # aka "genproxy.corp.amdocs.com" ISR
     set DIG_PARAMS " -x " # not working in zsh...
 end
 end
 
   ###export PINGHOSTIP="${1}:8080" # not always IP, param could come also as a name to be resolved...
 
-  set PROXY_URL (set +eu ; echo ${1:-"$PINGHOSTIP:8080"} )
-  PROXY_HOST=$(echo $PROXY_URL | cut -d":" -f1 )
-  PROXY_PORT=$(echo $PROXY_URL | cut -d":" -f2 )
+  set PROXY_URL (set +eu ; echo (1:-"$PINGHOSTIP:8080") )
+  set PROXY_HOST (echo $PROXY_URL | cut -d":" -f1 )
+  set PROXY_PORT (echo $PROXY_URL | cut -d":" -f2 )
   ## test if genproxycan be reached
   # nc is much better, as the ping is both slow 
   # also some users don't have perms to run ping.
 
   # if the nc binary exists, we'll use it instead of ping
-  NC_EXISTS=$( { type nc 2>/dev/null || true ; } | { grep -c " is " || true ; } )
-
-  DIG_EXISTS=$( { type dig 2>/dev/null || true ; } | { grep -c " is " || true ; } )
+  set NC_EXISTS (if type -q nc; echo 1; else; echo 0; end)
+  set DIG_EXISTS (if type -q dig; echo 1; else; echo 0; end)
 
   ## on mac, we cannot use dig <ip-address>, so our dig solution should be avoided here, and shifting to NC or PING.
-  ON_MAC=0
-  if [ \( -s /etc/bashrc_Apple_Terminal \) ]; then
-    ON_MAC=1
-  fi
-  if [ $ON_MAC -lt 1 -a $DIG_EXISTS -gt "0" ]; then
-  #if [ $DIG_EXISTS -gt "0" ]; then
-    DIG_RESOLVED=$({ dig +short +tries=1 +time=1 +search `echo $DIG_PARAMS` $PROXY_HOST 2>/dev/null || true ; } | { grep -v " timed out" || true ; } | { grep -v "no servers could be reached" || true ; } |  { grep '\.' || true ; } | { wc -l || true ; } )  # Not working in ZSH due to $DIG_PARAMS
-    #DIG_RESOLVED=$({ dig +short +tries=1 +time=1 +search $PROXY_HOST 2>/dev/null || true ; } | { grep -v " timed out" || true ; } | { grep -v "no servers could be reached" || true ; } |  { grep '\.' || true ; } | { wc -l || true ; } )
-    [ $DIG_RESOLVED -gt "0" ] && PROXY_IS_REACHABLE=1
-  elif [ $NC_EXISTS -gt "0" ]; then
-   while true; do # this should run only once; It's usefull to skip other tests if one shows there is no proxy
-    CONN_TIMEDOUT=$({ nc -v -4 -w2 -z $PROXY_HOST $PROXY_PORT 2>&1 || true ; } | { grep -c 'timed out' || true ; } )
-    [ $CONN_TIMEDOUT -eq "1" ] && PROXY_IS_REACHABLE=0 && break
-    CONN_REFUSED=$({ nc -v -4 -w2 -z $PROXY_HOST $PROXY_PORT 2>&1 || true ; } | { grep -c efused || true ; } )
-    [ $CONN_REFUSED -eq "1" ] && PROXY_IS_REACHABLE=0 && break
-    NAME_RESOLUTION_ISSUE=$({ nc -v -4 -w2 -z $PROXY_HOST $PROXY_PORT 2>&1 || true ; } | { grep -c -i name || true ; } )
-    [ $NAME_RESOLUTION_ISSUE -eq "1" ] && PROXY_IS_REACHABLE=0 && break
-    #let SOME_ERROR=CONN_TIMEDOUT+CONN_REFUSED+NAME_RESOLUTION_ISSUE
-    #if [ $SOME_ERROR -gt "0" ]; then
-    #  PROXY_IS_REACHABLE=0
-    #else
-    #  PROXY_IS_REACHABLE=1
-    #fi
-    PROXY_IS_REACHABLE=1
+  set ON_MAC 0
+  if test \( -s /etc/bashrc_Apple_Terminal \)
+    set ON_MAC 1
+  end
+  if test $ON_MAC -lt 1 -a $DIG_EXISTS -gt "0"
+    set DIG_RESOLVED ( dig +short +tries=1 +time=1 +search $DIG_PARAMS $PROXY_HOST 2>/dev/null  |  grep -v " timed out" | grep -v "no servers could be reached"  | grep '\.' | wc -l )  # Not working in ZSH due to $DIG_PARAMS
+    if test $DIG_RESOLVED -gt 0; set PROXY_IS_REACHABLE 1; end
+  else if test $NC_EXISTS -gt 0
+   while true # this should run only once; It's usefull to skip other tests if one shows there is no proxy
+    set CONN_TIMEDOUT ( nc -v -4 -w2 -z $PROXY_HOST $PROXY_PORT 2>&1  | grep -c 'timed out' )
+    if test $CONN_TIMEDOUT -eq "1"; set PROXY_IS_REACHABLE 0; and break; end
+    set CONN_REFUSED ( nc -v -4 -w2 -z $PROXY_HOST $PROXY_PORT 2>&1  | grep -c efused )
+    if test $CONN_REFUSED -eq "1"; set PROXY_IS_REACHABLE 0; and break; end 
+    set NAME_RESOLUTION_ISSUE ( nc -v -4 -w2 -z $PROXY_HOST $PROXY_PORT 2>&1  | grep -c -i name )
+    if test $NAME_RESOLUTION_ISSUE -eq "1"; set PROXY_IS_REACHABLE=0; and break; end
+    set PROXY_IS_REACHABLE 1
     break
-   done
+   end # ends the while
   else
     # fallback to using ping, as nc was not found. One should install nc asap, to ensure correct results.
-    P=$( { ping -4 -q -n -c 2 -W 1 -w 2 $PROXY_HOST 2>/dev/null || true ; } | { grep -c " 0% packet loss" || true ; } )
-    if [ $P -eq "1" ]; then
-      PROXY_IS_REACHABLE=1
+    set P ( ping -4 -q -n -c 2 -W 1 -w 2 $PROXY_HOST 2>/dev/null | grep -c " 0% packet loss" )
+    if test $P -eq "1"
+      set PROXY_IS_REACHABLE 1
     else
-      PROXY_IS_REACHABLE=0
-    fi
-  fi
-
+      set PROXY_IS_REACHABLE 0
+    end
+  end
   #return $PROXY_IS_REACHABLE
   #we cannot return non-zero as it conflicts with set -e
   echo "$PROXY_IS_REACHABLE"
+end
+
+## Every time proxy is called, we can trigger additional scripts.
+function proxy_auto_triggers
+  #sub-shell to save callers shell options, but working without unset
+  set ARG1 (echo $argv[1]"x")
+  if test $ARG1 = "x"
+    return 0 ; # no arg passed, skipping triggers
+  end
+
+  set PROXY_ON_OFF_ONE_OR_ZERO $argv[1]
+  
+  if test -r /etc/proxy/auto_triggers/ 
+    return 0 ; # there is no such folder
+  end
+
+  for i in /etc/proxy/auto_triggers/*.sh
+    if test -x $i
+      $i $PROXY_ON_OFF_ONE_OR_ZERO >/dev/null 2>&1; or true # no output
+      #"$i" "$PROXY_ON_OFF_ONE_OR_ZERO" || true # keep output
+    end
+  end
+end
+
+function proxyhelp
+  echo "\
+proxy auto|on|off|install|reinstall|status
+First time install (requires sudo). Use either curl or wget
+source <(curl -kSs https://gitlab.corp.amdocs.com/ansible-roles/image-template/raw/master/files/profile_proxy.sh)
+OR
+source <(wget --quiet --tries=1 --timeout=2 -O - --no-check-certificate https://gitlab.corp.amdocs.com/ansible-roles/image-template/raw/master/files/profile_proxy.sh)
+proxy install
+
+afterwards, usual commands are:
+proxy auto # will enable env vars proxy while in amdocs network, and disable otherwise; As opposed to auto_full, auto will not modify anything beyond env vars
+proxy install # will install/reinstall and also determine if you are in office or not, and enable/disable all proxy related configurations for your linux (and requries sudo for write in /etc/profile.d/)
+
+more details: typedef proxy OR vi /etc/profile.d/profile_proxy.sh
+
+if you provided a custom proxy value and it is not reachable, you will see this message.
+"
+end
+
+function proxy_get_url
+ #no_proxy_alt can be prepared in advance in order to add to the list.
+  #http://$username:$password@proxyserver:8080/
+
+  #sub-shell to save callers shell options, but working without unset
+  #ARG1=$(set +eu ; echo "${1}x" )  #set -u friendly outside
+  if test $POSSIBLE_PROXY = "x"
+    # No value provided as arg, using the default:
+    if test \( (is_wsl) -eq "1" \) -o \( -f /etc/eaas.info \)
+      set POSSIBLE_PROXY "wslproxy.corp.amdocs.com"
+      set TMP (is_proxy_reachable "$POSSIBLE_PROXY:8080")
+      if test $TMP -eq "1"
+        set -x http_proxy "http://$POSSIBLE_PROXY:8080/"
+      else
+        set POSSIBLE_PROXY "10.232.233.204" # isrwslproxy.corp.amdocs.com # because wslproxy is not in all DNS servers (@Paul Arevalo)
+        set TMP (is_proxy_reachable "$POSSIBLE_PROXY:8080")
+        if [ "$TMP" = "1" ]; then
+          set -x http_proxy "http://$POSSIBLE_PROXY:8080/"
+        else
+          set -x http_proxy "ERROR_error_Error_PROXY_proxy_URL_IS_UNREACHABLE_$POSSIBLE_PROXY"
+          proxyhelp && return 76
+        end
+      end
+    else
+      set -x http_proxy "http://genproxy.corp.amdocs.com:8080/"
+    end
+  else ## POSSIBLE_PROXY is defined from outsite (e.g. proxyon function)
+    ## first, test if it was intended to set a special servername, or it was a mistake:
+    set has_dot (echo $POSSIBLE_PROXY | grep -c "\." 2>/dev/null; or true)
+    if test $has_dot -eq 0
+      set POSSIBLE_PROXY "$POSSIBLE_PROXY.corp.amdocs.com"
+    end
+    #P=$( { ping -4 -q -n -c 2 -W 1 -w 2 $POSSIBLE_PROXY 2>/dev/null || true ; } | { grep -c " 0% packet loss" || true ; } )
+    if tst (is_proxy_reachable "$POSSIBLE_PROXY:8080") -eq "1"
+      set -x http_proxy "http://$POSSIBLE_PROXY:8080/"
+    else
+      set -x http_proxy "ERROR_error_Error_PROVIDED_PROXY_proxy_URL_IS_UNREACHABLE_$POSSIBLE_PROXY"
+      proxyhelp; and return 76
+    end
+  end
+  echo $http_proxy
+end
+
+function proxyon
+  #no_proxy_alt can be prepared in advance in order to add to the list.
+  #http://$username:$password@proxyserver:8080/
+
+  #sub-shell to save callers shell options, but working without unset
+  set ARG1 (echo $argv[1]"x")
+  if test $ARG1 != "x" #set -u friendly outside
+    #export POSSIBLE_PROXY="${1}" # we got proxy as argument to proxyon
+    set POSSIBLE_PROXY (echo "$argv[1]:dummyPort" | cut -d":" -f1 )
+  else
+    set -x POSSIBLE_PROXY "x"
+  end
+  set http_proxy (proxy_get_url)
+  set -x http_proxy
+  set -x all_proxy "$http_proxy"
+  set -x ALL_PROXY "$http_proxy"
+  set -x HTTP_PROXY "$http_proxy"
+  set -x https_proxy "$http_proxy"
+  set -x HTTPS_PROXY "$http_proxy"
+  set -x ftp_proxy "$http_proxy"
+  set -x FTP_PROXY "$http_proxy"
+  set -x CUSTOM_NO_PROXY="$CUSTOM_NO_PROXY:-localhost"
+  set -x custom_no_proxy="$custom_no_proxy:-localhost"
+
+  #export no_proxy="localhost,127.0.0.1,.svc,.local,.amdocs.com,.socket,.sock,.neo.corp.amdocs.aws,on-nexus-proxy,nexus-proxy,aeegerrit,on-nexus3,on-nexus4,.openet-dublin,10.65.224.59,.openet.com,docker.sock,localaddress,.localdomain.com,illinlic01,indlinsls,linvc04"
+
+  ## IN the future use pacparser with http://wpad.corp.amdocs.com/wpad.dat to generate the no_proxy.
+  ## https://en.wikipedia.org/wiki/Reserved_IP_addresses
+  set -x no_proxy "localhost,127.0.0.1,127.0.1.1,.svc,.default,.local,.internal,.testing,fs.amdocs.com,.amdocs.com,.sock,.neo.corp.amdocs.aws,on-nexus-proxy,nexus-proxy,aeegerrit,on-nexus3,on-nexus4,.openet-dublin,10.65.224.59,.openet.com,docker.sock,localaddress,.localdomain,.localdomain.com,illinlic01,indlinsls,linvc04,bitbucket,gitlab,ldap,10.232.233.70,10.19.50.20,10.19.50.20,genproxy,10.17.88.18,10.17.88.22,10.232.217.1,10.232.217.2,10.20.40.100,10.19.214.200,distributionstg,artifactorystg,distribution,artifactory,.socket,168.63.129.16,169.254.169.254,169.254.169.253,169.254.169.123,127.254.254.254,teleproxy,traffic-manager.ambassador,(hostname -s),(hostname -f),(cat /etc/resolv.conf | grep nameserver | awk '(print $argv[2])'|tr '\n' ',')localhost4,.localdomain4,$CUSTOM_NO_PROXY,$custom_no_proxy,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,198.18.0.0/16,198.19.0.0/16,192.0.0.171,192.0.0.0/24,198.51.100.0/24,203.0.113.0/24,233.252.0.0/24,192.0.2.0/24"
+  # $(hostname -I| tr ' ' ',')$(hostname -i),
+  #export no_proxy_alt=${no_proxy_alt:-$(grep "^no_proxy_alt" /dokbin/env.txt 2>/dev/null || true)} #removing functionality# causing non-zero exit
+  #[ -n $no_proxy_alt ] && export no_proxy="${no_proxy},${no_proxy_alt}" # fails on set -u
+  # normally, entire: 169.254.0.0/16 should never go via proxy:https://stackoverflow.com/questions/42314029/whats-special-about-169-254-169-254-ip-address-for-aws
+  ### VERY SLOW, so removing from no_proxy: $(host -4 $(hostname -f) 2>/dev/null | grep '\.' | grep -v "not found" | grep -v ":" | awk '{print $NF}' | tr '\n' ',')
+  set -x NO_PROXY "$no_proxy"
+  set -x no_http_proxy "$no_proxy"
+  
+  # trigger proxy scripts with arg 1 (in amdocs)
+  proxy_auto_triggers 1; or true
+end
+
+function proxyauto
+  set TMP (is_proxy_reachable)
+  if test $TMP = "1"
+    proxyon
+  else
+    proxyoff
+  end
+end
+
+function proxyoff
+  for X in HTTP_PROXY http_proxy HTTPS_PROXY https_proxy FTP_PROXY ftp_proxy no_proxy NO_PROXY no_http_proxy all_proxy ALL_PROXY
+    set -e X; or true
+    set -e POSSIBLE_PROXY; or true
+  end  
+  # trigger proxy scripts with arg 1 (in amdocs)
+  proxy_auto_triggers 0; true
+end
+
+function proxystatus
+    echo "\
+Usage: proxy <auto|on|off|status|auto_full|help> 
+=== Current Status: ===
+"
+  for X in HTTP_PROXY http_proxy HTTPS_PROXY https_proxy FTP_PROXY ftp_proxy no_proxy NO_PROXY no_http_proxy all_proxy ALL_PROXY
+    eval echo "set -x $X" "(echo $$X)"
+  end
+end
+
+############################
+### ADVANCED FUNCTIONALITY:#
+############################
+function proxy_os_configs_auto
+  echo "$funcname$argv:"
+  #P=$( { ping -4 -q -n -c 2 -W 1 -w 2 genproxy.corp.amdocs.com 2>/dev/null || true ; } | { grep -c " 0% packet loss" || true ; } )
+  if test (is_proxy_reachable) -eq "1"
+    proxy_os_configs_on
+  else
+    proxy_os_configs_off
+  end
 end
