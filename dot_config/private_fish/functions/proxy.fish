@@ -5,38 +5,45 @@
 ########
 ### CORE FUNCTIONALITY:
 function proxy
-switch $argv[1]
-case a auto
-    proxyauto
-case af auto_full install reinstall 
-    proxy_install_in_profile_auto; and proxyauto; and proxy_os_configs_auto; and proxyauto; and echo "check using: proxy status"
-case c proxy_os_configs_auto
-    proxy_os_configs_auto
-case on ON On
-    proxyon $2
-case off OFF Off
-    proxyoff
-case s status 
-    proxystatus
-case install_in_profile
-    proxy_install_in_profile
-case force_on full on_force
-    proxyon; and proxy_os_configs_on; and proxy_install_in_profile_on; and proxystatus
-case help
-    proxyhelp
-case '*'
-    proxyon $1
-end
+  switch $argv[1]
+    case "" "a" "auto"
+      proxyauto
+    case "af" "auto_full" "install" "reinstall"
+      proxy_install_in_profile_auto
+      proxyauto
+      proxy_os_configs_auto
+      proxyauto
+      echo "check using: proxy status"
+    case "c" "proxy_os_configs_auto"
+      proxy_os_configs_auto
+    case "on" "ON" "On"
+      proxyon $argv[2]
+    case "off" "OFF" "Off"
+      proxyoff
+    case "s" "status"
+      proxystatus
+    case "install_in_profile"
+      proxy_install_in_profile
+    case "force_on" "full" "on_force"
+      proxyon
+      proxy_os_configs_on
+      proxy_install_in_profile_on
+      proxystatus
+    case "help"
+      proxyhelp
+    case "*"
+      proxyon $argv[1]
+  end
 end
 
 ## Test if we are in WSL
 function is_wsl
-set MS_IN_UNAME (uname -r | grep -i microsoft || true )
-if test "x$WSL_DISTRO_NAME" != "x"  -o -d /run/WSL/ -o "x$MS_IN_UNAME" != "x"
+  set MS_IN_UNAME (uname -r | grep -i microsoft || true )
+  if [ "x$WSL_DISTRO_NAME" != "x"  -o -d /run/WSL/ -o "x$MS_IN_UNAME" != "x" ]
     echo "1"
-else
+  else
     echo "0"
-end
+  end
 end
 
 ## Test if we are in docker
@@ -69,7 +76,7 @@ end
 
   ###export PINGHOSTIP="${1}:8080" # not always IP, param could come also as a name to be resolved...
 
-  set PROXY_URL (set +eu ; echo (1:-"$PINGHOSTIP:8080") )
+  set PROXY_URL (echo (1:-"$PINGHOSTIP:8080") )
   set PROXY_HOST (echo $PROXY_URL | cut -d":" -f1 )
   set PROXY_PORT (echo $PROXY_URL | cut -d":" -f2 )
   ## test if genproxycan be reached
@@ -160,9 +167,9 @@ function proxy_get_url
 
   #sub-shell to save callers shell options, but working without unset
   #ARG1=$(set +eu ; echo "${1}x" )  #set -u friendly outside
-  if test $POSSIBLE_PROXY = "x"
+  if test $POSSIBLE_PROXY -eq "x"
     # No value provided as arg, using the default:
-    if test \( (is_wsl) -eq "1" \) -o \( -f /etc/eaas.info \)
+    if test (is_wsl) -eq "1" -o -f /etc/eaas.info
       set POSSIBLE_PROXY "wslproxy.corp.amdocs.com"
       set TMP (is_proxy_reachable "$POSSIBLE_PROXY:8080")
       if test $TMP -eq "1"
@@ -218,19 +225,8 @@ function proxyon
   set -x HTTPS_PROXY "$http_proxy"
   set -x ftp_proxy "$http_proxy"
   set -x FTP_PROXY "$http_proxy"
-  set -x CUSTOM_NO_PROXY="$CUSTOM_NO_PROXY:-localhost"
-  set -x custom_no_proxy="$custom_no_proxy:-localhost"
-
-  #export no_proxy="localhost,127.0.0.1,.svc,.local,.amdocs.com,.socket,.sock,.neo.corp.amdocs.aws,on-nexus-proxy,nexus-proxy,aeegerrit,on-nexus3,on-nexus4,.openet-dublin,10.65.224.59,.openet.com,docker.sock,localaddress,.localdomain.com,illinlic01,indlinsls,linvc04"
-
-  ## IN the future use pacparser with http://wpad.corp.amdocs.com/wpad.dat to generate the no_proxy.
-  ## https://en.wikipedia.org/wiki/Reserved_IP_addresses
-  set -x no_proxy "localhost,127.0.0.1,127.0.1.1,.svc,.default,.local,.internal,.testing,fs.amdocs.com,.amdocs.com,.sock,.neo.corp.amdocs.aws,on-nexus-proxy,nexus-proxy,aeegerrit,on-nexus3,on-nexus4,.openet-dublin,10.65.224.59,.openet.com,docker.sock,localaddress,.localdomain,.localdomain.com,illinlic01,indlinsls,linvc04,bitbucket,gitlab,ldap,10.232.233.70,10.19.50.20,10.19.50.20,genproxy,10.17.88.18,10.17.88.22,10.232.217.1,10.232.217.2,10.20.40.100,10.19.214.200,distributionstg,artifactorystg,distribution,artifactory,.socket,168.63.129.16,169.254.169.254,169.254.169.253,169.254.169.123,127.254.254.254,teleproxy,traffic-manager.ambassador,(hostname -s),(hostname -f),(cat /etc/resolv.conf | grep nameserver | awk '(print $argv[2])'|tr '\n' ',')localhost4,.localdomain4,$CUSTOM_NO_PROXY,$custom_no_proxy,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,198.18.0.0/16,198.19.0.0/16,192.0.0.171,192.0.0.0/24,198.51.100.0/24,203.0.113.0/24,233.252.0.0/24,192.0.2.0/24"
-  # $(hostname -I| tr ' ' ',')$(hostname -i),
-  #export no_proxy_alt=${no_proxy_alt:-$(grep "^no_proxy_alt" /dokbin/env.txt 2>/dev/null || true)} #removing functionality# causing non-zero exit
-  #[ -n $no_proxy_alt ] && export no_proxy="${no_proxy},${no_proxy_alt}" # fails on set -u
-  # normally, entire: 169.254.0.0/16 should never go via proxy:https://stackoverflow.com/questions/42314029/whats-special-about-169-254-169-254-ip-address-for-aws
-  ### VERY SLOW, so removing from no_proxy: $(host -4 $(hostname -f) 2>/dev/null | grep '\.' | grep -v "not found" | grep -v ":" | awk '{print $NF}' | tr '\n' ',')
+  set -x CUSTOM_NO_PROXY $CUSTOM_NO_PROXY":-localhost"
+  set -x custom_no_proxy $custom_no_proxy":-localhost"
   set -x NO_PROXY "$no_proxy"
   set -x no_http_proxy "$no_proxy"
   
@@ -326,13 +322,15 @@ echo "$funcname$argv:"
   end
 end
 
+# Is this really needed if being managed by Chezmoi?
 function proxy_install_in_profile_on
   echo "$funcname$argv:"
   set WGET_EXISTS (if type -q wget; echo 1; else; echo 0; end)
-  set -x no_proxy "$no_proxy:-localhost,gitlab.corp.amdocs.com"
-  export NO_PROXY="${NO_PROXY:-localhost},gitlab.corp.amdocs.com"
-  if [ $WGET_EXISTS -gt "0" ]; then
-    \rm -f /tmp/profile_proxy.sh 2>/dev/null || true
+  set -x no_proxy (if set -q no_proxy; echo "$no_proxy,gitlab.corp.amdocs.com"; else; echo "localhost,gitlab.corp.amdocs.com"; end)
+  set -x NO_PROXY (if set -q no_proxy; echo "$no_proxy,gitlab.corp.amdocs.com"; else; echo "localhost,gitlab.corp.amdocs.com"; end)
+
+  if test $WGET_EXISTS -gt "0"
+    rm -f /tmp/profile_proxy.sh 2>/dev/null; or true
     wget --quiet --no-check-certificate --tries=1 --timeout=2 -O /tmp/profile_proxy.sh https://gitlab.corp.amdocs.com/ansible-roles/image-template/raw/master/files/profile_proxy.sh
   else
     curl -k -Sso /tmp/profile_proxy.sh https://gitlab.corp.amdocs.com/ansible-roles/image-template/raw/master/files/profile_proxy.sh
@@ -353,3 +351,243 @@ function proxy_install_in_profile_on
     #"; going to exit" && return 77 # removing this as we will have proxy auto after config. And we want to have the vars set even when this download fails.
   end
 end
+#####################
+#####################
+
+#########################
+### docker proxy ########
+#########################
+function docker_proxy_on 
+  echo "$funcname$argv:"
+  sudo mkdir -p /etc/systemd/system/docker.service.d/ /etc/systemd/system/containerd.service.d/ /etc/systemd/system/crio.service.d/
+
+  if test \( (is_wsl) -eq "1" \) -o \( -f /etc/eaas.info \)
+    echo "(status filename) - in WSL"
+    echo "\
+[Service]
+Environment=http_proxy=http://wslproxy.corp.amdocs.com:8080
+Environment=https_proxy=http://wslproxy.corp.amdocs.com:8080
+Environment=no_proxy=localhost,127.0.0.1,127.0.1.1,.svc,.default,.local,.internal,.testing,fs.amdocs.com,.amdocs.com,.sock,.neo.corp.amdocs.aws,on-nexus-proxy,nexus-proxy,aeegerrit,on-nexus3,on-nexus4,.openet-dublin,10.65.224.59,.openet.com,docker.sock,localaddress,.localdomain,.localdomain.com,illinlic01,indlinsls,linvc04,bitbucket,gitlab,ldap,10.232.233.70,10.19.50.20,10.19.50.20,genproxy,10.17.88.18,10.17.88.22,10.232.217.1,10.232.217.2,10.20.40.100,10.19.214.200,distributionstg,artifactorystg,distribution,artifactory,.socket,168.63.129.16,169.254.169.254,169.254.169.253,169.254.169.123,127.254.254.254,teleproxy,traffic-manager.ambassador,"(hostname -s),(hostname -f),(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'|tr '\n' ',')(host -4 (hostname -f) 2>/dev/null | grep '\.' | grep -v "not found" | grep -v \":\" | awk '{print $NF}' | tr '\n' ',')localhost4,"$CUSTOM_NO_PROXY","$custom_no_proxy",10.0.0.0,172.16.0.0,192.168.0.0"
+" | tee /etc/systemd/system/containerd.service.d/http-proxy.conf | tee /etc/systemd/system/crio.service.d/http-proxy.conf > /etc/systemd/system/docker.service.d/docker_proxy.conf
+  else
+    echo "(status filename) - not in WSL"
+    echo "\
+[Service]
+Environment=http_proxy=http://genproxy.corp.amdocs.com:8080
+Environment=https_proxy=http://genproxy.corp.amdocs.com:8080
+Environment=no_proxy=localhost,127.0.0.1,127.0.1.1,.svc,.default,.local,.internal,.testing,fs.amdocs.com,.amdocs.com,.sock,.neo.corp.amdocs.aws,on-nexus-proxy,nexus-proxy,aeegerrit,on-nexus3,on-nexus4,.openet-dublin,10.65.224.59,.openet.com,docker.sock,localaddress,.localdomain,.localdomain.com,illinlic01,indlinsls,linvc04,bitbucket,gitlab,ldap,10.232.233.70,10.19.50.20,10.19.50.20,genproxy,10.17.88.18,10.17.88.22,10.232.217.1,10.232.217.2,10.20.40.100,10.19.214.200,distributionstg,artifactorystg,distribution,artifactory,.socket,168.63.129.16,169.254.169.254,169.254.169.253,169.254.169.123,127.254.254.254,teleproxy,traffic-manager.ambassador,"(hostname -s),(hostname -f),(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'|tr '\n' ',')(host -4 (hostname -f) 2>/dev/null | grep '\.' | grep -v "not found" | grep -v \":\" | awk '{print $NF}' | tr '\n' ',')localhost4,"$CUSTOM_NO_PROXY","$custom_no_proxy",10.0.0.0,172.16.0.0,192.168.0.0"
+" | tee /etc/systemd/system/containerd.service.d/http-proxy.conf | tee /etc/systemd/system/crio.service.d/http-proxy.conf > /etc/systemd/system/docker.service.d/docker_proxy.conf
+  end
+  if test \( (is_docker) -eq "1" \)
+    sudo systemctl daemon-reload >/dev/null 2>&1 || true
+    echo "$argv0 - in WSL/docker, skipping systemctl restart. You have to do yourself:"
+    echo "sudo systemctl restart docker.service containerd.service crio.service"
+  else
+    echo "$0 - restarting docker/containerd/crio services ..."
+    sudo systemctl daemon-reload
+    sudo systemctl restart docker.service containerd.service crio.service >/dev/null 2>&1 || true
+  end
+end
+
+function docker_proxy_off
+  echo "$funcname$argv:"
+  sudo mkdir -p /etc/systemd/system/docker.service.d
+  echo "\
+[Service]
+#Environment=http_proxy=http://genproxy.corp.amdocs.com:8080
+#Environment=https_proxy=http://genproxy.corp.amdocs.com:8080
+#Environment=no_proxy=localhost,127.0.0.1,127.0.1.1,.svc,.default,.local,.internal,.testing,fs.amdocs.com,.amdocs.com,.sock,.neo.corp.amdocs.aws,on-nexus-proxy,nexus-proxy,aeegerrit,on-nexus3,on-nexus4,.openet-dublin,10.65.224.59,.openet.com,docker.sock,localaddress,.localdomain,.localdomain.com,illinlic01,indlinsls,linvc04,bitbucket,gitlab,ldap,10.232.233.70,10.19.50.20,10.19.50.20,genproxy,10.17.88.18,10.17.88.22,10.232.217.1,10.232.217.2,10.20.40.100,10.19.214.200,distributionstg,artifactorystg,distribution,artifactory,.socket,168.63.129.16,169.254.169.254,169.254.169.253,169.254.169.123,127.254.254.254,teleproxy,traffic-manager.ambassador,"(hostname -s),(hostname -f),(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'|tr '\n' ',')(host -4 (hostname -f) 2>/dev/null | grep '\.' | grep -v "not found" | grep -v \":\" | awk '{print $NF}' | tr '\n' ',')localhost4,"$CUSTOM_NO_PROXY","$custom_no_proxy",10.0.0.0,172.16.0.0,192.168.0.0"
+    " | sudo tee /etc/systemd/system/containerd.service.d/http-proxy.conf | sudo tee /etc/systemd/system/crio.service.d/http-proxy.conf > /etc/systemd/system/docker.service.d/docker_proxy.conf
+  if [ \( (is_wsl) -eq "1" \) -o \( (is_docker) -eq "1" \) ]; then
+    echo "$0 - in WSL/docker, skipping systemctl restart"
+  else
+    echo "$0 - restarting docker ..."
+    sudo systemctl daemon-reload
+    sudo systemctl restart docker.service containerd.service crio.service >/dev/null 2>&1 || true
+  end
+end
+
+#########################
+### debian (e.g. Ubuntu)#
+#########################
+
+function debian_machine_wide_proxy_on
+  echo "$funcname$argv:"
+  #As user (not root, not sudo)
+  gsettings set org.gnome.system.proxy mode auto 2>/dev/null; or true # when there is no gnome (e.g. docker, ignore error)
+  gsettings set org.gnome.system.proxy autoconfig-url 'http://wpad.corp.amdocs.com/wpad.dat' 2>/dev/null; or true # when there is no gnome (e.g. docker, ignore error)
+  
+  if test (is_wsl) -eq "1" -o (is_docker) -eq "1"
+    echo "$0 - in WSL/docker, skipping nmcli"
+  else
+    set NMCLI_EXISTS (type nmcli 2>/dev/null; or true | grep -c " is "; or true)
+    if test $NMCLI_EXISTS -gt "0"
+      echo (status function; or true)(status current-command; or true)":amdocs search domain exists, removing it and network restart for 1st active interface (if you have more, do it manually)"
+      set interfaceid (nmcli --fields uuid --colors no c show --active | tail -1 | tr -d " ")
+      set INT1 $interfaceid"x"
+      if test $INT1 != "x"
+        sudo nmcli connection modify $interfaceid proxy.method "auto"; or true
+        sudo nmcli connection modify $interfaceid proxy.pac-url "http://wpad.corp.amdocs.com/wpad.dat"; or true
+        echo "check using: sudo nmcli connection show"
+      end
+    else
+      echo "nmcli is missing. For best experience, please install it using sudo apt install network-manager"
+    end
+  end
+end
+
+function debian_machine_wide_proxy_off
+  echo "$_function:$argv"
+  #As user (not root, not sudo)
+  gsettings set org.gnome.system.proxy autoconfig-url '' 2>/dev/null || true # when there is no gnome (e.g. docker, ignore error)
+  gsettings set org.gnome.system.proxy mode none 2>/dev/null || true # when there is no gnome (e.g. docker, ignore error)
+
+  if [ \( (is_wsl) -eq "1" \) -o \( (is_docker) -eq "1" \) ]
+    echo "$_function:$argv - in WSL/docker, skipping nmcli"
+  else
+    set NMCLI_EXISTS (type nmcli > /dev/null ; and echo $status)
+    if [ $NMCLI_EXISTS -gt "0" ]
+      echo "$_function:$argv:amdocs search domain exists, removing it and network restart for 1st active interface (if you have more, do it manually)"
+      set interfaceid (nmcli --fields uuid --colors no c show --active | tail -1 | tr -d " ")
+      set INT1 "$interfaceid"x
+      if [ "$INT1" != "x" ]
+        sudo nmcli connection modify $interfaceid proxy.method "auto" || true
+      end
+    else
+      echo "nmcli is missing. For best experience, please install it using sudo apt install network-manager"
+    end
+  end
+end
+
+function debian_snap_proxy_on
+  echo (string join "" $argv[1] $argv[2])":"
+  sudo mkdir -p /etc/systemd/system/snapd.service.d
+
+  if [ \( (is_wsl) -eq "1" \) -o \( -f /etc/eaas.info \) ]
+    echo "$argv[0] - in WSL"
+    echo "\
+[Service]
+#Environment=http_proxy=http://wslproxy.corp.amdocs.com:8080
+#Environment=https_proxy=http://wslproxy.corp.amdocs.com:8080
+Environment=http_proxy=http://wslproxy.corp.amdocs.com:8080
+Environment=https_proxy=http://wslproxy.corp.amdocs.com:8080
+Environment=no_proxy=localhost,127.0.0.1,127.0.1.1,.svc,.default,.local,.internal,.testing,fs.amdocs.com,.amdocs.com,.sock,.neo.corp.amdocs.aws,on-nexus-proxy,nexus-proxy,aeegerrit,on-nexus3,on-nexus4,.openet-dublin,10.65.224.59,.openet.com,docker.sock,localaddress,.localdomain,.localdomain.com,illinlic01,indlinsls,linvc04,bitbucket,gitlab,ldap,10.232.233.70,10.19.50.20,10.19.50.20,genproxy,10.17.88.18,10.17.88.22,10.232.217.1,10.232.217.2,10.20.40.100,10.19.214.200,distributionstg,artifactorystg,distribution,artifactory,.socket,168.63.129.16,169.254.169.254,169.254.169.253,169.254.169.123,127.254.254.254,teleproxy,traffic-manager.ambassador,"(hostname -s),(hostname -f),(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'|tr '\n' ',')(host -4 (hostname -f) 2>/dev/null | grep '\.' | grep -v "not found" | grep -v \":\" | awk '{print $NF}' | tr '\n' ',')localhost4,"$CUSTOM_NO_PROXY","$custom_no_proxy",10.0.0.0,172.16.0.0,192.168.0.0"
+" | sudo tee /etc/systemd/system/snapd.service.d/snap_proxy.conf >/dev/null
+  else
+    echo "$argv[0] - not in WSL"
+    echo "\
+    [Service]
+Environment=http_proxy=http://genproxy.corp.amdocs.com:8080
+Environment=https_proxy=http://genproxy.corp.amdocs.com:8080
+Environment=no_proxy=localhost,127.0.0.1,127.0.1.1,.svc,.default,.local,.internal,.testing,fs.amdocs.com,.amdocs.com,.sock,.neo.corp.amdocs.aws,on-nexus-proxy,nexus-proxy,aeegerrit,on-nexus3,on-nexus4,.openet-dublin,10.65.224.59,.openet.com,docker.sock,localaddress,.localdomain,.localdomain.com,illinlic01,indlinsls,linvc04,bitbucket,gitlab,ldap,10.232.233.70,10.19.50.20,10.19.50.20,genproxy,10.17.88.18,10.17.88.22,10.232.217.1,10.232.217.2,10.20.40.100,10.19.214.200,distributionstg,artifactorystg,distribution,artifactory,.socket,168.63.129.16,169.254.169.254,169.254.169.253,169.254.169.123,127.254.254.254,teleproxy,traffic-manager.ambassador,"(hostname -s),(hostname -f),(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'|tr '\n' ',')(host -4 (hostname -f) 2>/dev/null | grep '\.' | grep -v "not found" | grep -v \":\" | awk '{print $NF}' | tr '\n' ',')localhost4,"$CUSTOM_NO_PROXY","$custom_no_proxy",10.0.0.0,172.16.0.0,192.168.0.0"
+" | sudo tee /etc/systemd/system/snapd.service.d/snap_proxy.conf >/dev/null
+  end
+end
+
+function debian_snap_proxy_off
+  echo "$_function:$argv"
+  sudo mkdir -p /etc/systemd/system/snapd.service.d
+  echo "\
+[Service]
+#Environment=http_proxy=http://genproxy.corp.amdocs.com:8080
+#Environment=https_proxy=http://genproxy.corp.amdocs.com:8080
+#Environment=no_proxy=localhost,127.0.0.1,127.0.1.1,.svc,.default,.local,.internal,.testing,fs.amdocs.com,.amdocs.com,.sock,.neo.corp.amdocs.aws,on-nexus-proxy,nexus-proxy,aeegerrit,on-nexus3,on-nexus4,.openet-dublin,10.65.224.59,.openet.com,docker.sock,localaddress,.localdomain,.localdomain.com,illinlic01,indlinsls,linvc04,bitbucket,gitlab,ldap,10.232.233.70,10.19.50.20,10.19.50.20,genproxy,10.17.88.18,10.17.88.22,10.232.217.1,10.232.217.2,10.20.40.100,10.19.214.200,distributionstg,artifactorystg,distribution,artifactory,.socket,168.63.129.16,169.254.169.254,169.254.169.253,169.254.169.123,127.254.254.254,teleproxy,traffic-manager.ambassador,"(hostname -s),(hostname -f),(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'|tr '\n' ',')(host -4 (hostname -f) 2>/dev/null | grep '\.' | grep -v "not found" | grep -v \":\" | awk '{print $NF}' | tr '\n' ',')localhost4,"$CUSTOM_NO_PROXY","$custom_no_proxy",10.0.0.0,172.16.0.0,192.168.0.0"
+" | sudo tee /etc/systemd/system/snapd.service.d/snap_proxy.conf >/dev/null
+  if [ (is_wsl) = "1" ] || [ (is_docker) = "1" ]
+    echo "$argv[1] - in WSL/docker, skipping systemctl restart"
+  else
+    echo "$argv[1] - restarting docker ..."
+    sudo systemctl daemon-reload
+    sudo systemctl restart snapd.service >/dev/null 2>&1 || true
+  end
+end
+
+function debian_software_manager_gui_on
+  echo "$_function:$argv:debian/Ubuntu software manager (GUI) - proxy on"
+  echo ' 
+#https://manpages.debian.org/testing/apt/apt-transport-http.1.en.html
+Acquire::http {
+  Proxy::ilcedtoapt.corp.amdocs.com DIRECT;
+  #Proxy "http://genproxy.corp.amdocs.com:8080";
+  Proxy-Auto-Detect "/usr/local/bin/apt-autoproxy.sh";
+  Dl-Limit "99000";
+  Pipeline-Depth "99";
+
+  ## if probelmatic proxy, uncomment/change/enable
+  #No-Cache "true";
+  #No-Store "true";
+  #Max-Age "3660"
+  #Pipeline-Depth "0";
+  #SendAccept "false";
+}
+
+Acquire::https {
+  Proxy::ilcedtoapt.corp.amdocs.com DIRECT;
+  #Proxy "http://genproxy.corp.amdocs.com:8080";
+  Proxy-Auto-Detect "/usr/local/bin/apt-autoproxy.sh";
+  Dl-Limit "99000";
+  Pipeline-Depth "99";
+
+  ## if probelmatic proxy, uncomment/change/enable
+  #No-Cache "true";
+  #No-Store "true";
+  #Max-Age "3660"
+  #Pipeline-Depth "0";
+  #SendAccept "false";
+}
+
+## To debug possible issues:
+#Debug::Acquire::http "yes";
+#Debug::Acquire::https "yes";
+
+Acquire::BrokenProxy   "true";
+' | sudo tee /etc/apt/apt.conf.d/23proxy >/dev/null
+  
+  echo "Creating also /usr/local/bin/apt-autoproxy.sh"
+  echo '  
+#!/usr/bin/env sh
+  # In the future use pacparser with http://wpad.corp.amdocs.com/wpad.dat
+  # if looking for an amdocs website, return DIRECT
+  COUNT=$(echo $@ | grep -c '\.amdocs\.com' || true )
+  if [ $COUNT -gt 0 ]; then
+    #echo -n "direct://"
+    echo -n "DIRECT"
+    exit 0
+  fi
+
+  # If not FQDN, return DIRECT
+  COUNT=$(echo $@ | grep -c \'\.\' || true )
+  if [ $COUNT -eq 0 ]; then
+    echo -n "DIRECT"
+    exit 0
+  fi
+
+  # If it\'s an IP address, return DIRECT
+  COUNT=$(echo -n $@ | tr -d \'[0-9\.]\' | wc -c )
+  if [ $COUNT -eq 0 ]; then
+    echo -n "DIRECT"
+    exit 0
+  fi
+' | sudo tee /usr/local/bin/apt-autoproxy.sh >/dev/null
+
+  echo 'export PROXY_URL=$(proxy_get_url)' | sudo tee -a /usr/local/bin/apt-autoproxy.sh >/dev/null
+
+echo '
+  PROXY_HOST=$(echo $PROXY_URL | cut -d"/" -f3 | cut -d":" -f1 )
+  PROXY_PORT=$(echo $PROXY_URL | cut -d":" -f3 | cut -d"/" -f1 )
+  if nc -4 -w2 -z $PROXY_HOST $PROXY_PORT >/dev/null 2>/dev/null ; then
+    #ping test cannot be used by the _apt user
+    echo -n "${PROXY_URL}"
+    exit 0
+  else
+    #echo -n "direct://"
+    echo -n "DIRECT"
+    exit 0
+  fi
+  echo -n "DIRECT"
+  # When we exit without printing any echo, the default defined proxy is used.
+  exit 0
+' | sudo tee -a /usr/local/bin/apt-autoproxy.sh >/dev/null
+  sudo chmod +x /usr/local/bin/apt-autoproxy.sh
+  end
+
