@@ -76,7 +76,8 @@ end
 
   ###export PINGHOSTIP="${1}:8080" # not always IP, param could come also as a name to be resolved...
 
-  set PROXY_URL (echo (1:-"$PINGHOSTIP:8080") )
+  #set PROXY_URL (echo (1:-"$PINGHOSTIP:8080") )
+  set -l PROXY_URL (echo $argv[1] $PINGHOSTIP:8080)[1]
   set PROXY_HOST (echo $PROXY_URL | cut -d":" -f1 )
   set PROXY_PORT (echo $PROXY_URL | cut -d":" -f2 )
   ## test if genproxycan be reached
