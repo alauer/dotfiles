@@ -1,0 +1,13 @@
+services:
+  app:
+    environment:
+    - DOCKER_DEFAULT_PLATFORM=linux/amd64
+    entrypoint:
+    - sleep
+    - infinity
+    image: ubuntu:jammy
+    init: true
+    volumes:
+    - type: bind
+      source: /var/run/docker.sock
+      target: /var/run/docker.sock
