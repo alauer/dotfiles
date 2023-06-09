@@ -11,3 +11,4 @@ dot_config/private_fish/proxy.fish
 {{- end }}
 .gitignore
 compose-dev.yaml
+.devcontainer/*
