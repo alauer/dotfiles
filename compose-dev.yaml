@@ -1,11 +1,11 @@
 services:
   app:
-    environment:
-    - DOCKER_DEFAULT_PLATFORM=linux/amd64
+    build:
+      context: .devcontainer/
+      dockerfile: Dockerfile
     entrypoint:
     - sleep
     - infinity
-    image: ubuntu:jammy
     init: true
     volumes:
     - type: bind
