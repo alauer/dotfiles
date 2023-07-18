@@ -1,6 +1,6 @@
 ARG VARIANT="jammy"
-#FROM --platform=linux/amd64 docker-registry-proxy.corp.amdocs.com/ubuntu:${VARIANT}
-FROM --platform=linux/amd64 docker-registry-proxy.corp.amdocs.com/buildpack-deps:${VARIANT}-curl
+FROM --platform=linux/amd64 docker-registry-proxy.corp.amdocs.com/ubuntu:${VARIANT}
+#FROM --platform=linux/amd64 docker-registry-proxy.corp.amdocs.com/buildpack-deps:${VARIANT}-curl
 ARG USER_NAME=aaronla
 ENV LOD_PLATFORM=docker
 ENV DEBIAN_FRONTEND=noninteractive
@@ -29,7 +29,7 @@ sh -c "$(/bin/echo -e 'cat << EOF | tee -a /home/${USER_NAME}/.bashrc >/dev/null
 \nfi \
 \nEOF\n')"
 
-ENTRYPOINT ["/bin/bash", "-c"]
+ENTRYPOINT ["sleep", "infinity"]
 
 USER ${USER_NAME}:${USER_NAME}
 WORKDIR /home/${USER_NAME}
