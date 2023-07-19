@@ -3,7 +3,7 @@
 # shellcheck disable=SC2034,SC1090
 {{ if eq .chezmoi.os "linux" -}}
 
-#sudo chsh {{ .chezmoi.username }} -s `which fish`
+sudo chsh {{ .chezmoi.username }} -s `which zsh`
 
 # Starship
 sh -c "$(curl -fsSL https://starship.rs/install.sh)" -f -y -b $HOME/bin
@@ -11,7 +11,11 @@ sh -c "$(curl -fsSL https://starship.rs/install.sh)" -f -y -b $HOME/bin
 #EXA
 if [ ! -f "/usr/bin/exa" ]; then
 EXA_VERSION=$(curl -s "https://api.github.com/repos/ogham/exa/releases/latest" | grep -Po '"tag_name": "v\K[0-9.]+')
+{{ if eq .chezmoi.arch "arm64" -}}
+curl -Lo /tmp/exa.zip "https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-armv7-v${EXA_VERSION}.zip"
+{{ else if eq .chezmoi.arch "amd64"}}
 curl -Lo /tmp/exa.zip "https://github.com/ogham/exa/releases/latest/download/exa-linux-x86_64-v${EXA_VERSION}.zip"
+{{ end-}}
 unzip -q /tmp/exa.zip bin/exa -d "$HOME"
 fi
 
