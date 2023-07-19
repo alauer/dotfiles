@@ -15,7 +15,7 @@ EXA_VERSION=$(curl -s "https://api.github.com/repos/ogham/exa/releases/latest" |
 curl -Lo /tmp/exa.zip "https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-armv7-v${EXA_VERSION}.zip"
 {{ else if eq .chezmoi.arch "amd64"}}
 curl -Lo /tmp/exa.zip "https://github.com/ogham/exa/releases/latest/download/exa-linux-x86_64-v${EXA_VERSION}.zip"
-{{ end-}}
+{{ end -}}
 unzip -q /tmp/exa.zip bin/exa -d "$HOME"
 fi
 
