@@ -9,11 +9,12 @@ if [ ! -d "$HOME/.pyenv" ]; then
     git clone https://github.com/pyenv/pyenv-which-ext.git "$HOME"/.pyenv/plugins/pyenv-which-ext
     git clone https://github.com/pyenv/pyenv-update.git "$HOME"/.pyenv/plugins/pyenv-update
 fi
-
+sudo apt-get install -y software-properties-common
 sudo add-apt-repository -y ppa:neovim-ppa/unstable
 sudo apt-get update -qq
 
 sudo apt-get install -y python3-pip\
+    software-properties-common \
     python-is-python3 \
     fish \
     jq \

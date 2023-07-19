@@ -10,7 +10,7 @@ RUN sh -c "$(/bin/echo -e 'cat << EOF | tee /etc/apt/apt.conf >/dev/null \
 \nAcquire::https::Verify-Peer "false";\
 \nEOF\n')" && \
 apt-get update -y && \
-DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends ca-certificates wget curl sudo netcat virt-what iputils-ping openssh-client vim git && \
+DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends ca-certificates wget curl sudo netcat virt-what iputils-ping openssh-client vim git software-properties-common && \
 apt-get upgrade -y -qq && \
 apt-get autoclean -y -qq && \
 wget -q --no-check-certificate -O /usr/local/share/ca-certificates/FullAmdocsCA.crt https://gitlab.corp.amdocs.com/ansible-roles/setup-os-repositories-and-ca/-/blob/master/files/ca/FullAmdocsCA.crt && \
