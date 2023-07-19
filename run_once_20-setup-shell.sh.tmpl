@@ -17,7 +17,11 @@ fi
 
 #AWS CLI
 if [ ! -d "$HOME/.aws-cli/v2/current" ]; then
+{{ if eq .chezmoi.arch "arm64" -}}
+curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "/tmp/awscliv2.zip"
+{{ else if eq .chezmoi.arch "amd64"}}
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+{{ end -}}
 unzip -qq /tmp/awscliv2.zip -d /tmp/
 /tmp/aws/install -i "$HOME"/.aws-cli -b "$HOME"/bin
 fi
