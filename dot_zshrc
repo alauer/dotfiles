@@ -10,16 +10,6 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-{{ if eq .chezmoi.os "darwin" -}}
-export HOMEBREW_PREFIX=/opt/homebrew
-PATH="/opt/homebrew/bin:$PATH"
-{{ if eq .email "aaronla@amdocs.com" -}}
-if [ -f "/etc/profile_proxy.sh" ] ; then
-    . /etc/profile_proxy.sh
-fi
-{{ end -}}
-{{ end -}}
-
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 # Source aliases
