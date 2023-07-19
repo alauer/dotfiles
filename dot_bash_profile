@@ -15,7 +15,7 @@ if [ -d "$HOME/.local/bin" ] ; then
 fi
 
 # Source functions
-source ~/.functions.sh
+# source ~/.functions.sh
 
 # Source aliases
 source ~/.aliases
