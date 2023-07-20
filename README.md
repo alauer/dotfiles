@@ -13,7 +13,7 @@ For MacOs, install Homebrew first.
 ```
 
 ```bash
-sh -c "$(curl -fsLS chezmoi.io/get)" -- init https://gitlab.com/alauer/chezmoi-dotfiles.git
+echo insecure > $HOME/.curlrc;export PATH=$HOME/bin:$PATH;sh -c "$(curl -fsLS chezmoi.io/get)" -- -b $HOME/bin init --apply https://gitlab.com/alauer/chezmoi-dotfiles.git
 ```
 
 ## Pyenv Commands
