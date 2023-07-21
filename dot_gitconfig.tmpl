@@ -3,3 +3,9 @@
 	email = {{ .email | quote }}
 [safe]
         directory = *
+{{ if eq .email "aaronla@amdocs.com" -}}
+[http]
+    sslVerify = false
+[https]
+    sslVerify = false
+{{ end -}}
