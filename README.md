@@ -13,7 +13,7 @@ For MacOs, install Homebrew first.
 ```
 
 ```bash
-echo insecure > $HOME/.curlrc;export PATH=$HOME/bin:$PATH;sh -c "$(curl -fsLS chezmoi.io/get)" -- -b $HOME/bin init --apply https://gitlab.com/alauer/chezmoi-dotfiles.git
+echo insecure > $HOME/.curlrc;export PATH=$HOME/bin:$PATH;sh -c "$(curl -fsLS chezmoi.io/get)" -- -b $HOME/bin init --apply https://github.com/alauer/dotfiles.git
 ```
 
 ## Pyenv Commands
@@ -21,5 +21,5 @@ https://github.com/pyenv/pyenv/blob/master/COMMANDS.md
 
 ## To make dotfiles changes in Chezmoi
 ```bash
-chezmoi git remote set-url origin git@gitlab.com:alauer/chezmoi-dotfiles.git
+chezmoi git remote set-url origin git@github.com:alauer/dotfiles.git
 ```
