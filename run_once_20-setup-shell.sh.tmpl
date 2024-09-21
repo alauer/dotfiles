@@ -30,8 +30,6 @@ unzip -qq /tmp/awscliv2.zip -d /tmp/
 /tmp/aws/install -i "$HOME"/.aws-cli -b "$HOME"/bin
 fi
 
-{{- end -}}
-
 #Set Shell
 {{ if eq .email "lauer.aaron@gmail.com" -}}
 chsh -s $(which fish)
