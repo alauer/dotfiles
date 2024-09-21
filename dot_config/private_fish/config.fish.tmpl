@@ -1,0 +1,15 @@
+set -gx PYENV_ROOT $HOME/.pyenv
+
+{{ if eq .chezmoi.os "linux" -}}
+alias ls="exa"
+set PATH $HOME/bin $PYENV_ROOT/bin $HOME/local/bin $PATH
+{{ else if eq .chezmoi.os "darwin" -}}
+alias ls='exa'
+set PATH $HOME/bin /opt/homebrew/bin $PATH
+{{ end }}
+pyenv init - | source
+starship init fish | source
+alias vi='nvim'
+alias vim='nvim'
+# Microk8s
+alias kubectl='microk8s kubectl'

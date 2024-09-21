@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# shellcheck shell=bash
+{{ if eq .chezmoi.os "darwin" }}
+[ -e "${HOME}/.zshenv" ] && source "${HOME}/.zshenv"
+
+{{ else if eq .chezmoi.os "linux" }}
+[ -e "${HOME}/.bash_profile" ] && source "${HOME}/.bash_profile"
+[ -e "${HOME}/.bashrc" ] && source "${HOME}/.bashrc"
+{{ end }}
+
+# Latest Python
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="/opt/homebrew/bin:$PATH"
+eval "$(pyenv init -)"
+latest=$(pyenv install -l | grep -E '^[[:space:]]+[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+$' | tail -1 | xargs echo)
+pyenv install 3.10.8
+pyenv install "${latest}"
+pyenv virtualenv 3.10.8 aaron
+pyenv shell aaron

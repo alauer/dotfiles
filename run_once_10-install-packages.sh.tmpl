@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+# shellcheck shell=bash
+# shellcheck disable=SC2034,SC1090
+{{ if eq .chezmoi.os "linux" -}}
+
+sudo apt-get install -y software-properties-common
+#sudo add-apt-repository -y ppa:neovim-ppa/unstable
+sudo apt-get update -qq
+
+sudo apt-get install -y python3-pip\
+    software-properties-common \
+    python-is-python3 \
+    fish \
+    jq \
+    python3-dev \
+    python3-virtualenv \
+    libatlas-base-dev \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    wget \
+    curl \
+    llvm \
+    libncurses5-dev \
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev \
+    libffi-dev \
+    liblzma-dev \
+    python3-openssl \
+    git \
+    vim \
+    neovim \
+    unzip \
+    cmake \
+    zsh \
+    fontconfig \
+    exa
+
+cd ~
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip
+mkdir -p .local/share/fonts
+unzip Meslo.zip -d .local/share/fonts
+cd ~/.local/share/fonts
+rm *Windows*
+cd ~
+rm Meslo.zip
+fc-cache -fv
+
+# Pyenv
+if [ ! -d "$HOME/.pyenv" ]; then
+    git clone https://github.com/yyuu/pyenv.git "$HOME"/.pyenv
+    git clone https://github.com/pyenv/pyenv-virtualenv.git "$HOME"/.pyenv/plugins/pyenv-virtualenv
+    git clone https://github.com/pyenv/pyenv-which-ext.git "$HOME"/.pyenv/plugins/pyenv-which-ext
+    git clone https://github.com/pyenv/pyenv-update.git "$HOME"/.pyenv/plugins/pyenv-update
+fi
+
+{{ else if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env bash
+
+brew bundle --no-lock --file=/dev/stdin <<EOF
+tap "homebrew/cask"
+tap "homebrew/cask-versions"
+tap "homebrew/cask-fonts"
+cask_args appdir: "~/Applications", require_sha: true
+brew "git"
+brew "pyenv"
+brew "exa"
+brew "ssh-copy-id"
+brew "git"
+brew "git-extras"
+brew "macvim"
+brew "neovim"
+brew "jq"
+brew "wget"
+brew "fortune"
+brew "cowsay"
+brew "ansible"
+brew "awscli"
+brew "starship"
+brew "terraform"
+brew "helm"
+cask "font-meslo-lg-nerd-font"
+cask "iterm2"
+cask "sublime-text"
+cask "visual-studio-code"
+EOF
+
+if [ ! -d "$HOME/.pyenv/plugins" ]; then
+    git clone https://github.com/pyenv/pyenv-virtualenv.git "$HOME"/.pyenv/plugins/pyenv-virtualenv
+    git clone https://github.com/pyenv/pyenv-which-ext.git "$HOME"/.pyenv/plugins/pyenv-which-ext
+    git clone https://github.com/pyenv/pyenv-update.git "$HOME"/.pyenv/plugins/pyenv-update
+fi
+{{ end -}}

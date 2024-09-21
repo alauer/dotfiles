@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# shellcheck shell=bash
+# shellcheck disable=SC2034,SC1090
+{{ if eq .chezmoi.os "linux" -}}
+
+sudo chsh {{ .chezmoi.username }} -s `which zsh`
+
+# Starship
+sh -c "$(curl -fsSL https://starship.rs/install.sh)" -f -y -b $HOME/bin
+
+#EXA
+if [ ! -f "/usr/bin/exa" ]; then
+EXA_VERSION=$(curl -s "https://api.github.com/repos/ogham/exa/releases/latest" | grep -Po '"tag_name": "v\K[0-9.]+')
+{{ if eq .chezmoi.arch "arm64" -}}
+curl -Lo /tmp/exa.zip "https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-armv7-v${EXA_VERSION}.zip"
+{{ else if eq .chezmoi.arch "amd64"}}
+curl -Lo /tmp/exa.zip "https://github.com/ogham/exa/releases/latest/download/exa-linux-x86_64-v${EXA_VERSION}.zip"
+{{ end -}}
+unzip -q /tmp/exa.zip bin/exa -d "$HOME"
+fi
+
+#AWS CLI
+if [ ! -d "$HOME/.aws-cli/v2/current" ]; then
+{{ if eq .chezmoi.arch "arm64" -}}
+curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "/tmp/awscliv2.zip"
+{{ else if eq .chezmoi.arch "amd64"}}
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+{{ end -}}
+unzip -qq /tmp/awscliv2.zip -d /tmp/
+/tmp/aws/install -i "$HOME"/.aws-cli -b "$HOME"/bin
+fi
+
+{{- end -}}
+
+#Set Shell
+{{ if eq .email "lauer.aaron@gmail.com" -}}
+chsh -s $(which fish)
+{{else -}}
+chsh -s $(which zsh)
+{{- end}}
+
+# Powerline fonts
+#mkdir -p "${HOME}"/.fonts
+#git clone https://github.com/powerline/fonts "${HOME}"/.fonts/powerline-fonts/
+#source "${HOME}"/.fonts/powerline-fonts/install.sh
+{{ end -}}
