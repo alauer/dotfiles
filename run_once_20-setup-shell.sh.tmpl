@@ -32,9 +32,9 @@ fi
 
 #Set Shell
 {{ if eq .email "lauer.aaron@gmail.com" -}}
-sudo chsh -s $(which fish)
+chsh -s $(which fish)
 {{else -}}
-sudo chsh -s $(which zsh)
+chsh -s $(which zsh)
 {{- end}}
 
 # Powerline fonts
