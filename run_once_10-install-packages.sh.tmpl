@@ -37,7 +37,11 @@ sudo apt-get install -y python3-pip\
     cmake \
     zsh \
     fontconfig \
+{{  if eq .osid "linux-ubuntu-24.04" -}}
+    eza
+{{  else}}
     exa
+{{  end -}}
 
 cd ~
 wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip
