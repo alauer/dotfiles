@@ -1,8 +1,0 @@
-{{ $email := promptString "email" -}}
-[data]
-    email = {{ $email | quote }}
-
-encryption = "age"
-[age]
-    identity = "/home/user/key.txt"
-    passphrase = true
