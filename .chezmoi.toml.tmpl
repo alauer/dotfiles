@@ -1,3 +1,7 @@
 {{ $email := promptString "email" -}}
 [data]
     email = {{ $email | quote }}
+
+encryption = "age"
+[age]
+    passphrase = true
