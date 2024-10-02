@@ -1,7 +1,13 @@
 
 {{ $email := promptString "email" -}}
+{{- $osid := .chezmoi.os -}}
+{{- if hasKey .chezmoi.osRelease "id" -}}
+{{-   $osid = printf "%s-%s-%s" .chezmoi.os .chezmoi.osRelease.id .chezmoi.osRelease.versionID -}}
+{{- end -}}
+
 data:
     email:  {{ $email | quote }}
+    osid:   {{ $osid | quote }}
 
 age:
     identity: "~/.config/key.txt"
