@@ -1,12 +1,18 @@
 
-{{ $email := promptString "email" -}}
+{{- $codespaces:= env "CODESPACES" | not | not -}}
 {{- $osid := .chezmoi.os -}}
 {{- if hasKey .chezmoi.osRelease "id" -}}
 {{-   $osid = printf "%s-%s-%s" .chezmoi.os .chezmoi.osRelease.id .chezmoi.osRelease.versionID -}}
 {{- end -}}
 
+sourceDir: {{ .chezmoi.sourceDir | quote }}
 data:
-    email:  {{ $email | quote }}
+    codespaces: {{ $codespaces }}
+{{- if $codespaces }}{{/* Codespaces dotfiles setup is non-interactive, so set an email address */}}
+    email: "email@home.org"
+{{- else }}{{/* Interactive setup, so prompt for an email address */}}
+    email: {{ promptString "email" | quote }}
+{{- end }}    
     osid:   {{ $osid | quote }}
 
 age:
