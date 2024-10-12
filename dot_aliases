@@ -1,6 +1,6 @@
 # Use NeoVim instead of Vim
-alias vi='nvim'
+# alias vi='nvim'
 alias vim='nvim'
 alias ls='exa'
 # Microk8s
-alias kubectl='microk8s kubectl'
+# alias kubectl='microk8s kubectl'
