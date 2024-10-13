@@ -133,4 +133,4 @@ eval "$(pyenv init -)"
 if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
-eval -- "$(/home/coder/bin/starship init bash --print-full-init)"
+eval "$(starship init bash)"
