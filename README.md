@@ -7,6 +7,20 @@ chezmoi's documentation is at [chezmoi.io](https://chezmoi.io/).
 ## License
 
 MIT
+For Windows and WSL, install [Scoop](https://scoop.sh/#/)
+```Powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+
+scoop install git
+
+scoop bucket add nerd-fonts
+scoop install nerd-fonts/Meslo-NF
+scoop bucket add extras
+scoop install extras/vscode
+```
+
+
 For MacOs, install Homebrew first.
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
