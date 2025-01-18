@@ -65,9 +65,6 @@ fi
 #!/usr/bin/env bash
 
 brew bundle --no-lock --file=/dev/stdin <<EOF
-tap "homebrew/cask"
-tap "homebrew/cask-versions"
-tap "homebrew/cask-fonts"
 cask_args appdir: "~/Applications", require_sha: true
 brew "git"
 brew "pyenv"
