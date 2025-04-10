@@ -12,7 +12,7 @@ if [ ! -d "/Library/Developer/CommandLineTools" ]; then
 fi
 
 # HomeBrew and Casks
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew install age
 
 {{ else if eq .chezmoi.os "linux" }}
