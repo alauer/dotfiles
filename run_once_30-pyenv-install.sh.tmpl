@@ -13,7 +13,7 @@ export PATH="/opt/homebrew/bin:$PATH"
 export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init -)"
 latest=$(pyenv install -l | grep -E '^[[:space:]]+[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+$' | tail -1 | xargs echo)
-pyenv install 3.10.8
+pyenv install 3.13.7
 pyenv install "${latest}"
-pyenv virtualenv 3.10.8 aaron
+pyenv virtualenv 3.13.7 aaron
 pyenv shell aaron

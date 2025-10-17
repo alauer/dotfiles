@@ -2,7 +2,7 @@
 {{- $codespaces:= env "CODESPACES" | not | not -}}
 {{- $osid := .chezmoi.os -}}
 {{- if hasKey .chezmoi.osRelease "id" -}}
-{{-   $osid = printf "%s-%s-%s" .chezmoi.os .chezmoi.osRelease.id .chezmoi.osRelease.versionID -}}
+{{-   $osid = printf "%s-%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
 {{- end -}}
 
 sourceDir: {{ .chezmoi.sourceDir | quote }}
