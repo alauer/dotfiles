@@ -2,6 +2,7 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2034,SC1090
 {{ if eq .chezmoi.os "linux" -}}
+{{ if eq .osid "linux-ubuntu" -}}
 
 sudo apt-get install -y software-properties-common
 #sudo add-apt-repository -y ppa:neovim-ppa/unstable
@@ -37,14 +38,15 @@ sudo apt-get install -y python3-pip\
     cmake \
     zsh \
     fontconfig \
-{{  if eq .osid "linux-ubuntu-24.04" -}}
+{{  if eq .chezmoi.osRelease.versionID  "24.04" -}}
     eza
 {{  else}}
     exa
 {{  end -}}
+{{ end -}}
 
 cd ~
-wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip
+wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip
 mkdir -p .local/share/fonts
 unzip Meslo.zip -d .local/share/fonts
 cd ~/.local/share/fonts
