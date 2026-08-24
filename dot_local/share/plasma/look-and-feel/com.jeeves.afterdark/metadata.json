@@ -1,0 +1,15 @@
+{
+  "KPackageStructure": "Plasma/LookAndFeel",
+  "KPlugin": {
+    "Authors": [{"Name": "Jeeves.Ai"}],
+    "Category": "Global Themes",
+    "Description": "Cyberpunk command room at 2:13 AM",
+    "EnabledByDefault": true,
+    "Id": "com.jeeves.afterdark",
+    "License": "GPL-2.0-or-later",
+    "Name": "Jeeves After Dark",
+    "Version": "1.0.0",
+    "Website": ""
+  },
+  "X-Plasma-APIVersion": "2"
+}

@@ -1,0 +1,14 @@
+{
+  "KPlugin": {
+    "Authors": [{"Name": "Jeeves.Ai"}, {"Name": "KDE Visual Design Group"}],
+    "Category": "Dark",
+    "Description": "Obsidian-plum executive command-room Plasma style",
+    "EnabledByDefault": true,
+    "Id": "jeeves-after-dark",
+    "License": "LGPL-2.0-or-later",
+    "Name": "Jeeves After Dark",
+    "Version": "1.0.0",
+    "Website": ""
+  },
+  "X-Plasma-API": "5.0"
+}

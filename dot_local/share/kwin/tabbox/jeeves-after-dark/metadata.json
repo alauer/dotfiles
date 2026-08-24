@@ -1,0 +1,12 @@
+{
+  "KPackageStructure": "KWin/WindowSwitcher",
+  "KPlugin": {
+    "Authors": [{"Name": "Jeeves.Ai"}, {"Name": "Martin Gräßlin"}],
+    "Description": "Compact command-room window switcher",
+    "Icon": "preferences-system-windows-switcher-compact",
+    "Id": "jeeves-after-dark",
+    "License": "GPL-2.0-or-later",
+    "Name": "Jeeves After Dark",
+    "Version": "1.0.0"
+  }
+}

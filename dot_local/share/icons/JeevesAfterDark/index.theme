@@ -1,0 +1,12 @@
+[Icon Theme]
+Name=Jeeves After Dark
+Comment=Executive dark icon theme with Breeze Dark fallback
+Inherits=breeze-dark,breeze,hicolor
+Directories=scalable/status
+
+[scalable/status]
+Size=16
+MinSize=8
+MaxSize=256
+Type=Scalable
+Context=Status

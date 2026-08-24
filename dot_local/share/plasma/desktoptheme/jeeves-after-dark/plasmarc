@@ -1,0 +1,11 @@
+[Settings]
+FallbackTheme=default
+
+[Wallpaper]
+defaultWallpaperTheme=com.jeeves.afterdark
+defaultFileSuffix=.png
+defaultWidth=3440
+defaultHeight=1440
+
+[AdaptiveTransparency]
+enabled=true

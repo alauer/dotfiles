@@ -1,0 +1,12 @@
+{
+  "KPackageStructure": "KWin/Aurorae",
+  "KPlugin": {
+    "Authors": [{"Name": "Jeeves.Ai"}, {"Name": "Eliver Lara"}],
+    "Description": "Obsidian-plum executive window decoration",
+    "EnabledByDefault": true,
+    "Id": "JeevesAfterDark",
+    "License": "GPL-3.0-or-later",
+    "Name": "Jeeves After Dark",
+    "Version": "1.0.0"
+  }
+}
