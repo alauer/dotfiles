@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+                          http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+    <group name="General">
+        <entry name="loopWarnC"  type="Double">
+            <label>Loop temperature warn threshold (°C)</label>
+            <default>35</default>
+            <min>0</min>
+            <max>100</max>
+        </entry>
+        <entry name="loopAlertC" type="Double">
+            <label>Loop temperature alert threshold (°C)</label>
+            <default>40</default>
+            <min>0</min>
+            <max>100</max>
+        </entry>
+        <entry name="cpuWarnC"   type="Double">
+            <label>CPU temperature warn threshold (°C)</label>
+            <default>75</default>
+            <min>0</min>
+            <max>120</max>
+        </entry>
+        <entry name="cpuAlertC"  type="Double">
+            <label>CPU temperature alert threshold (°C)</label>
+            <default>90</default>
+            <min>0</min>
+            <max>120</max>
+        </entry>
+        <entry name="gpuWarnC"   type="Double">
+            <label>GPU temperature warn threshold (°C)</label>
+            <default>75</default>
+            <min>0</min>
+            <max>120</max>
+        </entry>
+        <entry name="gpuAlertC"  type="Double">
+            <label>GPU temperature alert threshold (°C)</label>
+            <default>90</default>
+            <min>0</min>
+            <max>120</max>
+        </entry>
+        <entry name="pumpLowRpm" type="Int">
+            <label>Pump low-RPM alert threshold</label>
+            <default>2500</default>
+            <min>0</min>
+            <max>10000</max>
+        </entry>
+    </group>
+</kcfg>
