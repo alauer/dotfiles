@@ -2,3 +2,5 @@ font-family = "MesloLGS Nerd Font"
 background-opacity = ".9"
 window-theme = "auto"
 background = "#1a1b26"
+copy-on-select = clipboard
+
