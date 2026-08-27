@@ -134,3 +134,8 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 eval "$(starship init bash)"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/aaron/.lmstudio/bin"
+# End of LM Studio CLI section
+

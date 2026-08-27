@@ -17,4 +17,3 @@ source ~/.aliases
 eval "$(pyenv init -)"
 eval "$(starship init zsh)"
 source ~/.zprofile
-#source $HOMEBREW_PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh

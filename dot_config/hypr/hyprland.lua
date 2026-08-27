@@ -35,7 +35,7 @@ hl.monitor({
 ---------------------
 
 -- Set programs that you use
-local terminal    = "kitty"
+local terminal    = "ghostty"
 local fileManager = "dolphin"
 local menu        = "walker"
 
@@ -49,10 +49,18 @@ local menu        = "walker"
 
 -- Walker launcher stack: elephant provides indexed data (desktop apps, files, etc.),
 -- and walker --gapplication-service pre-starts the GTK layer-shell surface for fast opens.
--- The SUPER+R keybind above just runs `walker`, which talks to these services.
+-- The SUPER+Space keybind above just runs `walker`, which talks to these services.
+-- Cliphist watcher: stores clipboard history so SUPER+Ctrl+V can show it.
+-- Waybar: top status bar (see ~/.config/waybar/config.jsonc + style.css).
+-- hyprpolkitagent: polkit auth agent (binary at non-standard path on CachyOS).
+--   Pops up a GUI dialog when an app requests elevated privileges.
 hl.on("hyprland.start", function ()
     hl.exec_cmd("elephant")
     hl.exec_cmd("walker --gapplication-service")
+    hl.exec_cmd("wl-paste --type text  --watch cliphist store")
+    hl.exec_cmd("wl-paste --type image --watch cliphist store")
+    hl.exec_cmd("waybar")
+    hl.exec_cmd("/usr/lib/hyprpolkitagent/hyprpolkitagent")
 end)
 
 
@@ -64,6 +72,10 @@ end)
 
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
+
+-- Make ghostty the XDG default terminal so XDG-aware apps
+-- (Dolphin's "Open Terminal Here", some IDEs, etc.) use it.
+hl.env("XDG_TERMINAL_EMULATOR", "/usr/bin/ghostty")
 
 
 -----------------------
@@ -185,6 +197,14 @@ hl.animation({ leaf = "zoomFactor",    enabled = true,  speed = 7,    bezier = "
 --     rounding    = 0,
 -- })
 
+-- Make workspaces 1-10 persistent so they always appear in the waybar
+-- hyprland/workspaces module and across session restarts, matching the
+-- keybind loop at SUPER+1..0. Without this, Hyprland destroys empty
+-- workspaces and waybar only shows the active one.
+for i = 1, 4 do
+    hl.workspace_rule({ workspace = tostring(i), persistent = true })
+end
+
 -- See https://wiki.hypr.land/Configuring/Layouts/Dwindle-Layout/ for more
 hl.config({
     dwindle = {
@@ -261,15 +281,42 @@ hl.device({
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
-hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
-local closeWindowBind = hl.bind(mainMod .. " + C", hl.dsp.window.close())
+hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(terminal), { description = "Open terminal (ghostty)" })
+local closeWindowBind = hl.bind(mainMod .. " + W", hl.dsp.window.close(), { description = "Close focused window" })
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu), { description = "Open launcher (walker)" })
+hl.bind(mainMod .. " + space", hl.dsp.exec_cmd(menu), { description = "Open launcher (walker)" })
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
+
+-- Omarchy alignment (Scope B): window-management + universal clipboard
+-- Reference: https://wiki.hypr.land/Configuring/Basics/Binds/
+-- NOTE: Hyprland's Lua hl.bind() parser requires UPPERCASE modifier names
+-- (CTRL, ALT, SHIFT). Mixed-case (Ctrl, Alt, Shift) is parsed as a keysym and fails.
+-- Window management (Omarchy-faithful mappings)
+hl.bind(mainMod .. " + T",              hl.dsp.window.float({ action = "toggle" }),            { description = "Toggle float (Omarchy)" })
+hl.bind(mainMod .. " + F",              hl.dsp.window.fullscreen({ mode = "fullscreen" }),     { description = "Fullscreen (Omarchy)" })
+hl.bind(mainMod .. " + ALT + F",        hl.dsp.window.fullscreen({ mode = "maximized" }),      { description = "Maximize / full width (Omarchy)" })
+hl.bind(mainMod .. " + O",              hl.dsp.window.pin({ action = "toggle" }),              { description = "Toggle sticky/pin (Omarchy)" })
+hl.bind(mainMod .. " + SHIFT + left",   hl.dsp.window.swap({ direction = "l" }),                { description = "Swap with left neighbor (Omarchy)" })
+hl.bind(mainMod .. " + SHIFT + right",  hl.dsp.window.swap({ direction = "r" }),                { description = "Swap with right neighbor (Omarchy)" })
+hl.bind(mainMod .. " + SHIFT + up",     hl.dsp.window.swap({ direction = "u" }),                { description = "Swap with upper neighbor (Omarchy)" })
+hl.bind(mainMod .. " + SHIFT + down",   hl.dsp.window.swap({ direction = "d" }),                { description = "Swap with lower neighbor (Omarchy)" })
+hl.bind(mainMod .. " + Tab",            hl.dsp.focus({ workspace = "+1" }),                    { description = "Next workspace (Omarchy)" })
+hl.bind(mainMod .. " + SHIFT + Tab",    hl.dsp.focus({ workspace = "-1" }),                    { description = "Previous workspace (Omarchy)" })
+hl.bind(mainMod .. " + CTRL + Tab",     hl.dsp.focus({ workspace = "previous" }),              { description = "Former workspace (Omarchy)" })
+hl.bind(mainMod .. " + minus",          hl.dsp.window.resize({ x = -40, y = 0, relative = true }), { description = "Shrink window width (Omarchy)" })
+hl.bind(mainMod .. " + equal",          hl.dsp.window.resize({ x =  40, y = 0, relative = true }), { description = "Expand window width (Omarchy)" })
+hl.bind(mainMod .. " + SHIFT + minus",  hl.dsp.window.resize({ x = 0, y = -40, relative = true }), { description = "Shrink window height (Omarchy)" })
+hl.bind(mainMod .. " + SHIFT + equal",  hl.dsp.window.resize({ x = 0, y =  40, relative = true }), { description = "Expand window height (Omarchy)" })
+
+-- Universal clipboard (Omarchy unified)
+-- Wrapper scripts in ~/.local/bin/ detect terminal class and route via wtype.
+hl.bind(mainMod .. " + C",       hl.dsp.exec_cmd("omarchy-cmd-copy"),  { description = "Copy (universal)" })
+hl.bind(mainMod .. " + V",       hl.dsp.exec_cmd("omarchy-cmd-paste"), { description = "Paste (universal)" })
+hl.bind(mainMod .. " + X",       hl.dsp.exec_cmd("omarchy-cmd-cut"),   { description = "Cut (universal, no-op in terminals)" })
+hl.bind(mainMod .. " + CTRL + V", hl.dsp.exec_cmd("cliphist list | walker --dmenu | cliphist decode | wl-copy"), { description = "Clipboard manager (cliphist)" })
 
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
@@ -279,8 +326,8 @@ hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "down" }))
 
 -- Switch workspaces with mainMod + [0-9]
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
-for i = 1, 10 do
-    local key = i % 10 -- 10 maps to key 0
+for i = 1, 4 do
+    local key = i % 4
     hl.bind(mainMod .. " + " .. key,             hl.dsp.focus({ workspace = i}))
     hl.bind(mainMod .. " + SHIFT + " .. key,     hl.dsp.window.move({ workspace = i }))
 end
@@ -302,8 +349,8 @@ hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),      { locked = true, repeating = true })
 hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),     { locked = true, repeating = true })
 hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"),                  { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown",hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),                  { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd("ddcutil setvcp 10 + 5 --noverify"),  { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("ddcutil setvcp 10 - 5 --noverify"),  { locked = true, repeating = true })
 
 -- Requires playerctl
 hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })

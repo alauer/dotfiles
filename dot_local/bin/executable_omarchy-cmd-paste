@@ -1,0 +1,15 @@
+#!/bin/bash
+# Omarchy unified clipboard: PASTE
+# Sends Ctrl+Shift+V to terminals, Ctrl+V to everything else.
+set -euo pipefail
+
+CLASS=$(hyprctl activewindow -j 2>/dev/null | jq -r '.class // ""')
+
+case "$CLASS" in
+  com.mitchellh.ghostty|kitty|foot|alacritty|org.wezfurlong.wezterm|org.gnome.Terminal|xterm|urxvt|st-256color)
+    wtype -M ctrl -M shift -k v
+    ;;
+  *)
+    wtype -M ctrl -k v
+    ;;
+esac

@@ -1,0 +1,125 @@
+// -*- mode: jsonc -*-
+//
+// Waybar configuration for Hyprland
+// Based on /etc/xdg/waybar/ (CachyOS sample), customized for:
+//   B1 — install + autostart
+//   B2 — useful modules (audio/network/cpu/memory/temperature/battery/backlight/clock/tray)
+//   B4 — workspace interactions (shift-click moves window, scroll cycles workspaces)
+// Icons: MesloLGS Nerd Font (NF PUA codepoints, written as \uXXXX escapes for portability)
+//
+{
+    "layer": "top",
+    "position": "top",
+    "output": "DP-1",          // single-monitor setup: pin to the Philips 346P1C only
+    "height": 28,
+    "spacing": 4,
+
+    "modules-left": [
+        "hyprland/workspaces",
+        "hyprland/submap"
+    ],
+
+    "modules-center": [
+        "hyprland/window"
+    ],
+
+    "modules-right": [
+        "idle_inhibitor",
+        "pulseaudio",
+        "network",
+        "cpu",
+        "memory",
+        "temperature",
+        "battery",
+        "backlight",
+        "clock",
+        "tray"
+    ],
+
+    // ---- Workspace interactions (B4) ----
+    "hyprland/workspaces": {
+        "on-shift-click": "hyprctl dispatch hl.dsp.window.move({workspace=$1})",
+        "on-scroll-up":   "hyprctl dispatch hl.dsp.focus({workspace=e+1})",
+        "on-scroll-down": "hyprctl dispatch hl.dsp.focus({workspace=e-1})",
+        "format": "{id}"
+    },
+
+    "hyprland/window": {
+        "format": "{title}",
+        "max-length": 80
+    },
+
+    "hyprland/submap": {
+        "format": "{}"
+    },
+
+    "clock": {
+        "format": " \uf017 {:%H:%M  %d %b}",
+        "format-alt": "{:%Y-%m-%d %H:%M:%S}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+
+    "cpu": {
+        "format": " \uf4bc {usage}%",
+        "tooltip": true,
+        "interval": 5
+    },
+
+    "memory": {
+        "format": " \uf538 {}%"
+    },
+
+    "temperature": {
+        "critical-threshold": 80,
+        "format": " \uf2c8 {temperatureC}°C",
+        "format-icons": ["\uf76b", "\uf2c8", "\uf769"]
+    },
+
+    "backlight": {
+        "format": " \uf185 {percent}%"
+    },
+
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": " \uf240{capacity}%"
+    },
+
+    "network": {
+        "format-wifi":       " \uf1eb {essid}",
+        "format-ethernet":   " \uf6ff {ifname}",
+        "format-linked":     " \uf6ff {ifname}",
+        "format-disconnected":" \uf071 off",
+        "tooltip-format": "{ifname}: {ipaddr}/{cidr}"
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": " \uf026 muted",
+        "format-icons": {
+            "headphone":  " \uf025",
+            "hands-free": " \uf590",
+            "headset":    " \uf590",
+            "phone":      " \uf3f2",
+            "portable":   " \uf3f2",
+            "car":        " \uf1b9",
+            "default":    [" \uf026", " \uf027", " \uf028"]
+        },
+        "scroll-step": 5
+    },
+
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated":   " \uf236",
+            "deactivated": ""
+        }
+    },
+
+    "tray": {
+        "icon-size": 16,
+        "spacing": 8
+    }
+}
