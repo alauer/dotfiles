@@ -1,0 +1,39 @@
+{
+  "version": 3,
+  "sessions": {
+    "92d8019a0a85fc19": {
+      "index": 11,
+      "chainHash": "3f5d1494afda14004c3c65efbcd5697255bdc031630cf692ea64f51cce3befc3",
+      "idChainHash": "b4a8eb5d523bffa17b41bda12ddc7da32ae1e5f7ff3dcc394a35401f16919bbf",
+      "tailStart": 0,
+      "messageIds": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "fingerprints": [
+        "4eef71676d5e4c9edd93f21ab3f80062f4281dd4b5d1294d214b4ded465175d7",
+        "450c106f8012c376a48dde3574e67d2e12cf6b2b6331993df35af33d9163acce",
+        "4db3f3bf906d5f95ebc28129b2ac4299d0daf679607b712a52c316bce56bb974",
+        "929bcddce30503275147c2b2807843dac216f41593fee539efaf902ef57d1d8b",
+        "be83950ba8da177331778375f33c12cee8110254b3513672794ac11b6b3e0a83",
+        "e5a86090e281a429f46bff10c8bd0ff18757481f36de919a14c4756b80165db9",
+        "9c89f1780d0e93322eff009af6e52648e9b51c8da70aaef738ae2273fe174ca3",
+        "89533492f89a38d66b025850adae0496c965477ed55223b44a08acd03a0db67f",
+        "1be28d8c40d8d885fee2366490cc58f697df66e3df6b918041ea700a4d11b665",
+        "7dec4a8064fcc8c7e03deae2c2b829361d1d5c8f220429133f286f52ed6b872d",
+        "06203ab5de33c1481717781b969498e05f4c9f5c865dfe933e906404b7d3c0d8",
+        "34c026dc84f9a932e7614c2012f253435a31278bf4eaa3fa75a3a5c9c9d0ab93"
+      ]
+    }
+  }
+}
