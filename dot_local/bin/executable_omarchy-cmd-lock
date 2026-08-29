@@ -1,0 +1,47 @@
+#!/usr/bin/env sh
+# omarchy-cmd-lock — Phase 2 fallback lock UI: hyprlock.
+#
+# The intended Phase 2 architecture (loginctl lock-session → Hyprland
+# session-lock-v1 → quickshell's Quickshell.Wayland.LockScreen widget) is
+# blocked on this system: loginctl lock-session does not engage Hyprland's
+# session-lock-v1 protocol because sddm-helper is the session leader and
+# does not forward the Lock signal to Hyprland. As a result, the QML
+# Jeeves-lock UI is not engaged when SUPER+L is pressed.
+#
+# Until that signal path is fixed, this wrapper runs hyprlock — a Hyprland-
+# native binary that binds directly to ext-session-lock-v1 with the
+# compositor and engages the lock UI on startup. hyprlock reads its config
+# from ~/.config/hypr/hyprlock.conf (currently absent; hyprlock defaults to
+# a dark UI with a password input — themable later with a Jeeves palette
+# config).
+#
+# Swaylock remains available as a CLI emergency fallback:
+#   $ swaylock
+#
+# Invariants:
+#   - `exec hyprlock` is the foreground UI; the wrapper waits for hyprlock
+#     to exit (the natural unlock event) before returning.
+#   - If the session is already locked, no-op (idempotent for repeated
+#     SUPER+L or racing hypridle events).
+#   - quickshell.service stays enabled but unused. Once the loginctl →
+#     Hyprland signal path is fixed, this wrapper will be rewritten to
+#     invoke quickshell's WlSessionLock via loginctl lock-session again.
+
+set -u
+
+# Step 0: already locked? no-op.
+if loginctl show-session -p LockedHint --value 2>/dev/null | grep -q '^yes$'; then
+  exit 0
+fi
+
+# Step 1: defensively ensure XDG_CONFIG_HOME is set so hyprlock can locate
+# its config. Hyprland's environment does not always export XDG_CONFIG_HOME,
+# and hyprlock exits with "Config path error" when unset. Fall back to
+# $HOME/.config (which is what most XDG tooling expects).
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME:-/home/aaron}/.config}"
+
+# Step 2: engage Hyprland-native session-lock-v1 via hyprlock. hyprlock
+# binds ext-session-lock-v1 directly with Hyprland and renders the lock
+# UI on startup. It exits when the user authenticates (or fails and the
+# user retries).
+exec hyprlock

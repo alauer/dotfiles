@@ -290,6 +290,7 @@ local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
 hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(terminal), { description = "Open terminal (ghostty)" })
+hl.bind(mainMod .. " + L",      hl.dsp.exec_cmd("omarchy-cmd-lock"), { description = "Lock screen (quickshell → swaylock)" })
 local closeWindowBind = hl.bind(mainMod .. " + W", hl.dsp.window.close(), { description = "Close focused window" })
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))

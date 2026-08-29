@@ -1,0 +1,17 @@
+[Unit]
+Description=Quickshell daemon (Jeeves lock session-lock handler)
+PartOf=graphical-session.target
+After=graphical-session.target
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+Type=simple
+# -d detaches from the controlling terminal so quickshell runs as a daemon.
+# -c jeeves-lock selects the named config at ~/.config/quickshell/jeeves-lock/.
+# --no-duplicate avoids starting a second instance if one is already running.
+ExecStart=/usr/bin/quickshell -d --no-duplicate -c jeeves-lock
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target

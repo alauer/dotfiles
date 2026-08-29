@@ -1,0 +1,3 @@
+module quickshell.jeeves-lock
+singleton Colors 1.0 colors.qml
+JeevesLock 1.0 shell.qml
