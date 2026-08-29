@@ -22,9 +22,11 @@
 ------------------
 
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
+-- Philips 346P1C supports up to 100Hz at native 3440x1440; preferred EDID mode is 60Hz
+-- so we override to the 99.98Hz mode explicitly.
 hl.monitor({
-    output   = "",
-    mode     = "preferred",
+    output   = "DP-1",
+    mode     = "3440x1440@99.98",
     position = "auto",
     scale    = "auto",
 })
@@ -52,6 +54,9 @@ local menu        = "walker"
 -- The SUPER+Space keybind above just runs `walker`, which talks to these services.
 -- Cliphist watcher: stores clipboard history so SUPER+Ctrl+V can show it.
 -- Waybar: top status bar (see ~/.config/waybar/config.jsonc + style.css).
+-- awww: Wayland wallpaper daemon (replaced hyprpaper in W3-C; hyprpaper's EGL
+--   backend kept crashing on this AMD system. The 1s sleep before awww img
+--   gives the daemon time to create its socket before the client connects).
 -- hyprpolkitagent: polkit auth agent (binary at non-standard path on CachyOS).
 --   Pops up a GUI dialog when an app requests elevated privileges.
 hl.on("hyprland.start", function ()
@@ -60,6 +65,8 @@ hl.on("hyprland.start", function ()
     hl.exec_cmd("wl-paste --type text  --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("waybar")
+    hl.exec_cmd("awww-daemon")
+    hl.exec_cmd("sh -c 'sleep 1 && awww img \"/home/aaron/Pictures/Jeeves Neon Cyberpunk Control Room2.png\"'")
     hl.exec_cmd("/usr/lib/hyprpolkitagent/hyprpolkitagent")
 end)
 
@@ -70,8 +77,9 @@ end)
 
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 
-hl.env("XCURSOR_SIZE", "24")
-hl.env("HYPRCURSOR_SIZE", "24")
+hl.env("XCURSOR_SIZE", "32")
+hl.env("HYPRCURSOR_SIZE", "32")
+hl.env("XCURSOR_THEME", "catppuccin-mocha-blue-cursors")
 
 -- Make ghostty the XDG default terminal so XDG-aware apps
 -- (Dolphin's "Open Terminal Here", some IDEs, etc.) use it.
@@ -110,8 +118,8 @@ hl.config({
         border_size = 2,
 
         col = {
-            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
-            inactive_border = "rgba(595959aa)",
+            active_border   = { colors = {"rgba(00FFFFee)", "rgba(ff2a6dee)"}, angle = 45 },
+            inactive_border = "rgba(4a4a5caa)",
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
