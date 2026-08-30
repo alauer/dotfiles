@@ -21,7 +21,6 @@ A chezmoi-managed snapshot of a Hyprland + Omarchy desktop. Portable across mach
 ├── dot_bash_profile        # bash login shell entry point
 ├── dot_bash_logout         # bash logout
 ├── dot_XCompose.tmpl       # X11 compose (templated identity)
-├── dot_gitconfig.tmpl      # git user config (templated identity)
 ├── dot_config/             # XDG_CONFIG_HOME contents
 │   ├── alacritty/
 │   ├── autostart/
