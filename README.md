@@ -59,7 +59,7 @@ sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply <this-repo-url>
 
 On first apply, chezmoi will prompt for:
 
-- **name** — display name (used in `~/.gitconfig` and `~/.XCompose`)
+- **name** — display name (used in `~/.gitconfig` via XDG path and `~/.XCompose`)
 - **email** — git email
 - **githubUsername** — used to populate `~/.ssh/authorized_keys` from GitHub
 
