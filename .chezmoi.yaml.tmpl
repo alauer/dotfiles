@@ -1,20 +1,20 @@
-
-{{- $codespaces:= env "CODESPACES" | not | not -}}
 {{- $osid := .chezmoi.os -}}
 {{- if hasKey .chezmoi.osRelease "id" -}}
-{{-   $osid = printf "%s-%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
+{{-   $osid = printf "%s-%s-%s" .chezmoi.os .chezmoi.osRelease.id .chezmoi.arch -}}
 {{- end -}}
 
 sourceDir: {{ .chezmoi.sourceDir | quote }}
-data:
-    codespaces: {{ $codespaces }}
-{{- if $codespaces }}{{/* Codespaces dotfiles setup is non-interactive, so set an email address */}}
-    email: "email@home.org"
-{{- else }}{{/* Interactive setup, so prompt for an email address */}}
-    email: {{ promptString "email" | quote }}
-{{- end }}    
-    osid:   {{ $osid | quote }}
+
+encryption: age
 
 age:
-    identity: "~/.config/key.txt"
-    recipient: "age16uwe3vtxythu7zfckqt5u736a9v0v2929q4xzs3wu9yuduqsvpasw47s7h"
+    identity:    "~/.config/chezmoi/key.txt"
+    recipient:   "age16uwe3vtxythu7zfckqt5u736a9v0v2929q4xzs3wu9yuduqsvpasw47s7h"
+    command:     age
+
+data:
+    codespaces: {{ eq (.chezmoi.osRelease.id | default "") "codespaces" }}
+    name:           {{ promptStringOnce . "name"           "Git/display name" | quote }}
+    email:          {{ promptStringOnce . "email"          "Git email"        | quote }}
+    githubUsername: {{ promptStringOnce . "githubUsername" "GitHub username"  | quote }}
+    osid:           {{ $osid | quote }}

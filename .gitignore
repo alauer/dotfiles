@@ -1,0 +1,7 @@
+# Local chezmoi session state (created by `pi` and other tools)
+.pi/
+
+# Local agent / editor state
+.DS_Store
+*.swp
+*.swo
