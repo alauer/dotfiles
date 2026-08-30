@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# chezmoi doctrine — pre-commit hook
+# Enforces: source in this repo is a faithful snapshot of /home/aaron.
+# If `chezmoi diff` shows any non-template-rendering drift, the commit is blocked.
+# Known-stale exclusions: .gitconfig (chezmoi boltdb reference; file doesn't actually
+# exist on dest — reconciles on next `chezmoi apply`).
+
+set -eu
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+# Run chezmoi diff, suppress noise
+DIFF_OUTPUT=$(chezmoi diff --no-tty 2>&1 | grep -v '^warning:' | grep -v 'config file template has changed' || true)
+
+# Filter out known-stale references (currently: .gitconfig from stale boltdb state)
+FILTERED=$(echo "$DIFF_OUTPUT" | awk '
+  /^diff --git a\/\.gitconfig b\/\.gitconfig/ { skip=1; next }
+  /^diff --git/ { skip=0 }
+  skip==1 { next }
+  skip==1 { next }
+  { print }
+')
+
+if [ -n "$FILTERED" ]; then
+  echo "❌ COMMIT BLOCKED — chezmoi drift detected"
+  echo ""
+  echo "Source in this repo has drifted from /home/aaron. Run one of:"
+  echo "  • chezmoi re-add <path>      (sync source from destination)"
+  echo "  • chezmoi add <path>        (add new file from destination)"
+  echo "  • edit source manually      (then chezmoi diff should be clean)"
+  echo ""
+  echo "Drift summary:"
+  echo "$FILTERED" | grep '^diff --git'
+  echo ""
+  echo "Full diff (first 30 lines):"
+  echo "$FILTERED" | head -30
+  exit 1
+fi
+
+exit 0
