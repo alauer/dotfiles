@@ -1,0 +1,35 @@
+mode = "dark"
+
+# ─── Surfaces (obsidian substrate, sampled from wallpaper) ──────────────
+background         = "#07060d"   # dominant obsidian (sampled #07060d, 4.6% of pixels)
+dark_background    = "#04040a"   # deeper still, for modals/overlays
+darker_background  = "#020106"   # deepest, for tooltips/menus
+lighter_background = "#15101f"   # lifted panel (slight violet bias to harmonize)
+
+# ─── Foregrounds (cool, layered, WCAG-verified) ─────────────────────────
+foreground         = "#dcd6f0"   # body text — pale ultraviolet, 14.33:1 (AAA)
+dark_foreground    = "#857a9c"   # muted/disabled — AA-safe (5.05:1), hue 259°
+light_foreground   = "#c5b9d8"   # secondary text, 10.86:1 (AAA)
+bright_foreground  = "#ece6f8"   # emphasis / headings, 16.56:1 (AAA)
+
+# ─── Accent system (Jeeves signature) ───────────────────────────────────
+accent             = "#a070ff"   # imperial violet — Jeeves signature signal, 6.01:1 (AA)
+selection          = "#3a2960"   # selection background (deep violet, low-luminance)
+muted              = "#2a1f3d"   # borders, dividers — barely visible violet
+
+# ─── Status colors (surgical, restrained) ──────────────────────────────
+red                = "#ff5c7a"   # failure / destructive, 6.79:1 (AA)
+yellow             = "#ffb86b"   # warnings / amber, 11.84:1 (AAA)
+green              = "#5fd9a8"   # success — cool mint, 11.51:1 (AAA)
+cyan               = "#5fb6ff"   # ★ surgical cyan — telemetry, focus, active, 9.24:1 (AAA)
+blue               = "#7a8cff"   # info — soft blue, 6.75:1 (AA)
+magenta            = "#d96fff"   # restrained electric magenta, 7.37:1 (AAA)
+brown              = "#5a4a3a"   # reserved
+
+# Bright variants — slight lift on lightness for emphasis roles
+bright_red         = "#ff7a92"
+bright_yellow      = "#ffd494"
+bright_green       = "#7fe5b8"
+bright_cyan        = "#7fc8ff"
+bright_blue        = "#9aa9ff"
+bright_magenta     = "#e98aff"
