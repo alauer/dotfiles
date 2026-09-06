@@ -10,9 +10,22 @@ source "$OMARCHY_PATH/default/bash/rc"
 
 # Add your own exports, aliases, and functions here.
 #
+
+# Host-local environment (NOT in chezmoi — keeps IP/MAC/keys out of the public dotfiles repo).
+# Create ~/.env with KEY=value lines; sourced iff present.
+[[ -f $HOME/.env ]] && set -a && source "$HOME/.env" && set +a
+
 export PATH="{{ .chezmoi.homeDir }}/.cache/.bun/bin:$PATH"
 # Make an alias for invoking commands you use constantly
 # alias p='python'
 
 # Created by `pipx` on 2026-08-30 13:02:26
 export PATH="$PATH:{{ .chezmoi.homeDir }}/.local/bin"
+
+if command -v brew > /dev/null 2>&1; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
+fi
+
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init bash)"
+fi

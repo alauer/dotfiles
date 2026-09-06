@@ -130,3 +130,8 @@ README.md
 # Reference-only (not deployed to $HOME; macOS users copy manually)
 # ============================================================================
 darwin
+
+# ============================================================================
+# Host-local environment (per-machine secrets/config; sourced by dot_bashrc.tmpl)
+# ============================================================================
+.env
