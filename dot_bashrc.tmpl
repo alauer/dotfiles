@@ -18,6 +18,9 @@ source "$OMARCHY_PATH/default/bash/rc"
 export PATH="{{ .chezmoi.homeDir }}/.cache/.bun/bin:$PATH"
 # Make an alias for invoking commands you use constantly
 # alias p='python'
+if command -v nvim >/dev/null 2>&1; then
+  alias vi='nvim'
+fi
 
 # Created by `pipx` on 2026-08-30 13:02:26
 export PATH="$PATH:{{ .chezmoi.homeDir }}/.local/bin"
