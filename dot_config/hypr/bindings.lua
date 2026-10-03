@@ -30,3 +30,10 @@
 
 -- Gaming mode toggle keybind (added by setup script)
 hl.bind("SUPER + F12", hl.dsp.exec_cmd("/usr/local/bin/switch-to-gaming"), { description = "Gaming mode toggle" })
+
+-- >>> omanta-switch managed block, do not edit by hand
+hl.unbind("SUPER + SHIFT + F")
+hl.unbind("SUPER + ALT + SHIFT + F")
+o.bind("SUPER + SHIFT + F", "File manager", "omanta-launch")
+o.bind("SUPER + ALT + SHIFT + F", "File manager (cwd)", "omanta-launch-cwd")
+-- <<< omanta-switch managed block
