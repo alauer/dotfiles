@@ -29,6 +29,10 @@ if command -v /home/linuxbrew/.linuxbrew/bin/brew > /dev/null 2>&1; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
 fi
 
+# Starship config ships with the Omarchy theme; fall back to ~/.config/starship.toml.
+_t="$HOME/.local/state/omarchy/current/theme/starship.toml"
+[[ -r $_t ]] && export STARSHIP_CONFIG="$_t"
+unset _t
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init bash)"
 fi
@@ -36,3 +40,5 @@ fi
 if command -v fastfetch >/dev/null 2>&1; then
   eval "fastfetch"
 fi
+
+. "$HOME/.local/share/../bin/env"
