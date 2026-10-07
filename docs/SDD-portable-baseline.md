@@ -149,8 +149,13 @@ consumes them:
   `.chezmoiexternal` as the primary route: that would pull on every apply, which collides
   with the never-apply rule and duplicates what `omarchy theme install/update` already do.
 - Note: a git-installed theme cannot ship `*.lua`, so the tachikoma theme's `hyprland.lua` would be ignored once it is installed from a repo rather than written locally (local dirs without `.git` are not filtered).
-- The existing vendored `dot_config/omarchy/themes/jeeves-cyber-mesh/` leaves this repo
-  (belongs in a theme repo). Other local themes (`tachikoma`, etc.) likewise.
+- The vendored `dot_config/omarchy/themes/jeeves-cyber-mesh/` was **removed 2026-10-07**
+  (`chezmoi forget --force`; the live copy under `~/.config/omarchy/themes/` is untouched).
+  Other local themes (`tachikoma`, etc.) likewise belong in a theme repo.
+- **The theme repo is shareable (Q2, 2026-10-07).** So a theme must ship no personal
+  artwork or household names: the `jeeves-cyber-mesh` README symlinked into
+  `~/Pictures/` and named the household, which is exactly what a public theme repo
+  cannot carry. The base may assume an installable theme repo by URL.
 
 ### 5.3 Where today's held drift lands
 
@@ -171,8 +176,10 @@ host-exclusive bucket, only *theme* and *laptop* gates.
 
 ## 6. Secrets, env, identity
 
-- age stays. One identity per machine at `~/.config/chezmoi/key.txt` (provisioned out of
-  band, 1Password), one fleet recipient. Bootstrap's slowest step; see Q3.
+- age stays. One fleet recipient. **Q3 resolved 2026-10-07:** a new machine reuses the
+  existing password-protected age key that chezmoi already holds; there is no separate
+  provisioning design and no dependence on 1Password being up first. Restore the key,
+  unlock it with the passphrase.
 - `~/.env` pattern stays for shell-only host-local values; ship a single
   `env.example` (keys, no values), not per host.
 - `.hermes` is in `.chezmoiignore`. Machine intelligence onboarding is a separate process.
@@ -200,8 +207,9 @@ destroy, but the apply remains an explicit decision, rehearsed first in a VM/dev
 - **Phase 1 (platform data, DONE):** platform gates as `.chezmoitemplates/is-*` partials (no data block needed). Converted
   `input.lua`/`bindings.lua` to `.tmpl` with the laptop gate; `git/config` template.
 - **Phase 2 (packages/plugins, DONE):** `.chezmoidata/{packages,omarchy}.yaml` + two `run_onchange_after_` scripts. Rendered under 4 simulated platforms (Omarchy laptop, Omarchy desktop, plain Arch, non-Arch) and `bash -n` checked. `shellcheck` is not installed here, so it has NOT been run.
-- **Phase 3 (theme split):** extract themes to their own repo; starship glue (V2);
-  drop vendored themes from this repo.
+- **Phase 3 (theme split):** starship glue done (V2); vendored `jeeves-cyber-mesh`
+  dropped 2026-10-07. Remaining: publish `tachikoma` and the rest to the (shareable)
+  theme repo and install them by URL.
 - **Phase 4 (rehearsal):** devcontainer with an Arch-family image: full bootstrap,
   including a non-Omarchy run to prove the gates.
 - **Phase 5 (docs & skill):** swap in README, finalize AGENTS.md, refresh the `chezmoi`
@@ -222,14 +230,14 @@ destroy, but the apply remains an explicit decision, rehearsed first in a VM/dev
 | # | Item | Mitigation / owner |
 |---|---|---|
 | Q1 | ~~Package list: seed or curate?~~ **Resolved:** seeded from T2, hand-curated into groups (section 4). | done |
-| Q2 | Theme repo audience: Aaron-only, or shareable? Decides how much the base can assume about it. | Aaron |
-| Q3 | Age key provisioning on a brand-new machine before 1Password is set up | separate design |
+| Q2 | ~~Theme repo audience~~ **Resolved 2026-10-07: shareable.** Base may assume an installable theme repo by URL; themes carry no personal artwork or household names. | done |
+| Q3 | ~~Age key provisioning~~ **Resolved 2026-10-07:** reuse the existing password-protected age key chezmoi already holds. No separate design. | done |
 | Q4 | Non-Arch support (apt/dnf): structure the data for it now, implement later? | default: structure only |
 | R1 | Omarchy renames/moves theme internals (the hook/template contract is Omarchy's, not ours) | V2 + version pin in docs |
 | R2 | Package scripts cannot be fully exercised without an apply | devcontainer/VM rehearsal is mandatory before any real run |
 | R3 | T1 (5 commits behind, dirty `.chezmoiignore`) must be reconciled before first push, not after | old SDD §10 |
 | R4 | Public repo: package lists/plugin IDs leak preferences | curate; keep anything sensitive out |
-| R5 | **Pre-commit hook vs. never-apply.** The hook blocks commits while `chezmoi diff` is non-empty. `run_onchange_` scripts always show as pending in `chezmoi diff` until a first apply records them, and repo-ahead edits (section 5.3) also count. So nothing from this work can be committed without either an apply or a hook change. Neither is done; this needs Aaron's decision (likely: teach the hook to ignore `.chezmoiscripts/` entries, which is a doctrine change). | Aaron |
+| R5 | **Pre-commit hook.** The gate at `.githooks/pre-commit` was inert until 2026-10-07 (`core.hooksPath` was unset, so git skipped it and every commit bypassed the gate silently). Now set locally to `.githooks`. **A fresh clone must re-run `git config core.hooksPath .githooks`** or the gate is dead again. Observed after wiring: `run_onchange_` scripts did not appear in `chezmoi diff`, so the anticipated conflict did not materialize. | wired 2026-10-07 |
 
 ## 11. Non-goals
 

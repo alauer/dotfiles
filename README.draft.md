@@ -72,10 +72,11 @@ in the per-host `~/.env`.
 ## Bootstrapping a new machine
 
 ```bash
-# Prereqs: Omarchy installed; age key provisioned out-of-band to
+# Prereqs: Omarchy installed; the existing password-protected age key restored to
 # ~/.config/chezmoi/key.txt (chmod 600); tailscale/GitHub SSH access.
 
 sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply git@github.com:alauer/dotfiles.git
+git -C ~/.local/share/chezmoi config core.hooksPath .githooks   # arm the drift gate
 ```
 
 First apply prompts for `name`, `email`, `githubUsername` (cached afterwards via
