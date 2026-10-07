@@ -61,7 +61,7 @@ in the per-host `~/.env`.
 │   ├── hypr/                                    # Hyprland (lua configs)
 │   ├── nvim/                                    # LazyVim-based
 │   ├── omarchy/                                 # Omarchy: agent default, hooks, branding
-│   ├── git/ mise/ lazygit/ # dev tooling (starship.toml ships with the theme)
+│   ├── git/ mise/ lazygit/ # dev tooling (starship.toml: theme-aware template in omarchy/)
 │   └── systemd/user/                            # user services + symlink targets
 ├── dot_local/
 │   ├── bin/                # mise wrappers + agent CLI shims (claude, codex, pi, …)

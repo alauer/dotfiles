@@ -42,8 +42,10 @@ future hosts. Read `docs/SDD-portable-baseline.md` before any structural change
 - **Platform differences, not host differences.** Machines differ by *platform*
   (distro family, Omarchy or not, laptop or not, CPU vendor), never by hostname. Gate with
   the partials in `.chezmoitemplates/` (`is-arch`, `is-omarchy`, `is-laptop`, `is-intel`):
-  `{{ if includeTemplate "is-laptop" . }}`. Look and feel belongs to the Omarchy theme, not
-  this repo. No hostname-suffixed copies, no branches.
+  `{{ if includeTemplate "is-laptop" . }}`. Palette and artwork belong to the Omarchy theme; the base
+  owns global layout taste, including the theme-aware starship template
+  (`dot_config/omarchy/themed/starship.toml.tpl.tmpl`). No hostname-suffixed copies,
+  no branches.
 - **Packages and plugins are data:** `.chezmoidata/packages.yaml`, `omarchy.yaml`. The
   install scripts are inert unless `CHEZMOI_INSTALL=1`; never set it on a live machine.
 - **Runtime state is never tracked.** If you find caches, logs, DBs, session

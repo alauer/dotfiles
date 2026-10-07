@@ -118,32 +118,55 @@ consumes them:
   `colors.toml` keys. Output lands in `~/.local/state/omarchy/current/next-theme/`.
 - Hooks run on theme change: `~/.config/omarchy/hooks/theme-set.d/`.
 - Built-in themed targets include alacritty, foot, ghostty, kitty, btop, helix, neovim,
-  vscode, hermes, pi, tmux, obsidian, shell. **Starship is not among them**, which the theme-folder route (§5.2) covers without a template.
+  vscode, hermes, pi, tmux, obsidian, shell. **Starship is not among them** — §5.2's
+  user template covers it, with no Omarchy built-in needed.
 
 ### 5.2 Design
 
 - The theme is its own repo (e.g. `tachikoma-theme`). Chezmoi does not re-implement
   theming. The base repo contributes only the small glue the native system lacks.
-- **Starship ships inside the theme** (Aaron's idea, verified read-only 2026-10-07).
-  `omarchy theme set` wipes `~/.local/state/omarchy/current/next-theme/`, copies the theme
-  folder into it, and swaps it in as `current/theme/`. So a `starship.toml` at the top of
-  the theme repo arrives at `~/.local/state/omarchy/current/theme/starship.toml` with no
-  template, no hook, and no chezmoi involvement. Git-installed themes are filtered by a
-  denylist (`alacritty.toml foot.ini ghostty.conf kitty.conf vscode.json`, plus any
-  `*.lua`); `starship.toml` is **not** on it, so it passes.
-  The whole file (layout **and** palette) belongs to the theme. This replaces the earlier
-  "layout in base, palette in theme" split. The base contributes one line only, in the
-  shell init (`dot_bashrc.tmpl`):
-  ```bash
-  _t="$HOME/.local/state/omarchy/current/theme/starship.toml"
-  [[ -r $_t ]] && export STARSHIP_CONFIG="$_t"; unset _t
-  ```
-  Fallback when the file is absent (stock Omarchy theme, or a non-Omarchy distro):
-  `STARSHIP_CONFIG` stays unset and starship reads `~/.config/starship.toml`. The base
-  keeps a **minimal, uncoloured** `starship.toml` for that case. Verified: with a
-  nonexistent `STARSHIP_CONFIG` or a dangling config, starship does not error; it prints
-  a plain default prompt (exit 0).
-  Staleness is not a risk: `next-theme` is rebuilt from scratch on every `theme set`.
+- **Starship: palette follows the theme via one Omarchy user template** — *primary route,
+  adopted 2026-10-07.* A single base-repo file, `~/.config/omarchy/themed/starship.toml.tpl`
+  (chezmoi source `dot_config/omarchy/themed/starship.toml.tpl.tmpl`), is rendered by
+  `omarchy theme set` from the **active theme's `colors.toml`** into
+  `~/.local/state/omarchy/current/theme/starship.toml`. Layout is fixed (rounded
+  powerline); `omarchy-theme-set-templates` substitutes `{{ accent }}`, `{{ cyan }}`,
+  `{{ green }}`, `{{ blue }}`, `{{ magenta }}`, `{{ red }}`, `{{ foreground }}`,
+  `{{ background }}`, `{{ selection }}`, `{{ lighter_background }}`. So **every** theme —
+  stock Omarchy ones included — gets a matching prompt from one maintained file, instead
+  of each theme having to ship a whole `starship.toml`.
+  - **Hybrid override (Aaron's choice, 2026-10-07):** a theme that ships its own
+    `starship.toml` still wins. Verified in `omarchy-theme-set-templates:396`
+    (`if [[ ! -f $output_path ]]` — templates never overwrite a file already copied from
+    the theme folder), and rehearsed end-to-end against the **real** renderer with a
+    sandbox `HOME`: a theme that ships a `starship.toml` kept its own palette, a theme
+    without one got the template's. `tachikoma` keeps its hand-tuned two-tone file as that
+    override; every other theme inherits the template.
+  - The base's one line of shell init (`dot_bashrc.tmpl`) is unchanged — both routes land
+    at the same path:
+    ```bash
+    _t="$HOME/.local/state/omarchy/current/theme/starship.toml"
+    [[ -r $_t ]] && export STARSHIP_CONFIG="$_t"; unset _t
+    ```
+    Fallback when that path is absent (non-Omarchy distro): `STARSHIP_CONFIG` stays unset
+    and starship reads `~/.config/starship.toml`; the base keeps a minimal uncoloured file
+    for that. Verified: a missing/dangling `STARSHIP_CONFIG` does not error — starship
+    prints a plain default prompt (exit 0). Staleness is not a risk: `next-theme` is
+    rebuilt on every `theme set`.
+  - **chezmoi gotcha (solved, verified 2026-10-07):** Omarchy requires the file be named
+    `starship.toml.tpl`, but chezmoi renders any `.tmpl` and dies on `{{ accent }}`
+    (`function "accent" not defined`). So the source name is **doubled**
+    (`starship.toml.tpl.tmpl`) and each token is written `{{ "{{" }} accent {{ "}}" }}`,
+    which chezmoi renders to a literal `{{ accent }}` for Omarchy. Do not "simplify" the
+    filename. Rehearsed: chezmoi escape → literal tokens → real Omarchy renderer → valid
+    config (`starship prompt` exit 0).
+  - Vendored from github.com/xgfurb/theme-aware-starship-prompt (MIT), credited in the
+    file header.
+- **A theme may still ship a whole `starship.toml`** (the pre-2026-10-07 model): it lands
+  at the same path via `cp -r themes/<name>/* next-theme/` and, per the precedence above,
+  overrides the template. Git-installed themes are filtered by a denylist
+  (`alacritty.toml foot.ini ghostty.conf kitty.conf vscode.json`, plus any `*.lua`);
+  `starship.toml` is **not** on it, so it passes.
 - **Delivery of the theme itself:** a one-time `omarchy theme install <repo-url>` in the
   bootstrap (network, so not during routine apply). Do **not** use a `git-repo`
   `.chezmoiexternal` as the primary route: that would pull on every apply, which collides
@@ -161,7 +184,7 @@ consumes them:
 
 | File | Layer |
 |---|---|
-| `starship.toml` | theme (whole file); base keeps a minimal fallback |
+| `starship.toml` | **base ships the template** (`omarchy/themed/starship.toml.tpl`) → palette follows every theme; a theme's own `starship.toml` overrides it (`tachikoma` keeps one). Minimal `~/.config/starship.toml` stays as the non-Omarchy fallback |
 | `looknfeel.lua` (gaps 3/7, Bibata cursor size 28) | **base**, global preference across all themes (`bibata-cursor-theme` goes on the package list) |
 | `screensaver.txt` | theme (ASCII art) |
 | `input.lua` keyboard settings | base |
@@ -224,6 +247,7 @@ destroy, but the apply remains an explicit decision, rehearsed first in a VM/dev
 | V3 | Hyprland version where Lua config starts; what does an older distro package ship? | Hyprland changelog / `hyprland --version` |
 | V4 | **Resolved by reading:** `omarchy plugin add <git-url> --enable --yes`, `list --json` is machine-readable, so the script checks `list --json` before adding. Not yet run (apply-only). | rehearsal |
 | V5 | Do all 8 drifting files render identically on T2 once converted? | `chezmoi diff` empty on T2 |
+| V6 | **Resolved by rehearsal (2026-10-07):** theme-aware starship template — the real `omarchy-theme-set-templates` in a sandbox `HOME` resolved the tokens from `colors.toml`; a theme shipping its own `starship.toml` kept its palette (override wins); `starship prompt` parsed the rendered output (exit 0). | closed |
 
 ## 10. Risks & open questions
 
