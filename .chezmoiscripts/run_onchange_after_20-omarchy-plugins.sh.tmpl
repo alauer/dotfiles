@@ -1,0 +1,37 @@
+{{- if not (includeTemplate "is-omarchy" .) -}}
+#!/bin/sh
+# Not Omarchy: no shell plugins to install.
+exit 0
+{{- else -}}
+#!/usr/bin/env bash
+# Adds Omarchy shell plugins tagged core (and laptop on portable chassis) that are missing.
+# Idempotent: skips plugins already discovered. Runs only on `chezmoi apply`.
+# list hash: {{ .omarchy.plugins | toJson | sha256sum }}
+set -euo pipefail
+
+# Opt-in guard: installs only when explicitly requested (fresh-machine bootstrap).
+# An accidental `chezmoi apply` on a live machine therefore cannot touch packages/plugins.
+if [ "${CHEZMOI_INSTALL:-0}" != "1" ]; then
+  echo "omarchy plugins: skipped (set CHEZMOI_INSTALL=1 to run; bootstrap only)" >&2
+  exit 0
+fi
+
+installed="$(omarchy plugin list --json)"
+have() { grep -q "\"id\":\"$1\"" <<<"$installed"; }
+
+add() {   # id url
+  if have "$1"; then echo "plugin $1: present"; return; fi
+  echo "plugin $1: adding"
+  omarchy plugin add "$2" --enable --yes
+}
+{{- $laptop := includeTemplate "is-laptop" . }}
+{{- range .omarchy.plugins }}
+{{- $want := or (eq .tag "core") (and (eq .tag "laptop") $laptop) }}
+{{- if and $want (get . "local" | default false) }}
+echo "plugin {{ .id }}: local-only (no git remote), skipped; publish it or copy it by hand" >&2
+{{- else if $want }}
+add {{ .id | quote }} {{ .url | quote }}
+{{- end }}
+{{- end }}
+echo "omarchy plugins: done"
+{{- end }}

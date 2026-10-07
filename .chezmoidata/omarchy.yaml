@@ -1,0 +1,26 @@
+# Omarchy shell plugins. ids are verified against `omarchy plugin list` and git remotes
+# read on both machines (2026-10-07). `local: true` = no git remote exists; it cannot be
+# installed by the script until it is published somewhere.
+# tags: core (every Omarchy machine), laptop (only portable chassis), optional (not installed).
+omarchy:
+  plugins:
+    - {id: crmne.mpris,                                  tag: core,     url: https://github.com/crmne/omarchy-mpris.git}
+    - {id: dansmith888.synology-drive,                   tag: core,     url: https://github.com/DanSmith888/omarchy-synology-drive.git}
+    - {id: io.github.grichard99.omaproton-vpn,           tag: core,     url: https://github.com/grichard99/omaproton-vpn.git}
+    - {id: io.github.juliusmork-sys.monitor-settings-extender, tag: core, url: https://github.com/juliusmork-sys/Omarchy-Monitor-Settings-Extender.git}
+    - {id: io.github.tymurbogach.replicant,              tag: core,     url: https://github.com/tymurbogach/replicant}
+    - {id: lobo.islands,                                 tag: core,     url: https://github.com/DanielLob-o/Islands.git}
+    - {id: omaplug,                                      tag: core,     url: https://github.com/fross100/omaplug.git}
+    - {id: settings-sync,                                tag: core,     url: https://github.com/isaactopo/omarchy-settings-sync.git}
+    - {id: trinity-bytes.lock-keys-osd,                  tag: core,     url: https://github.com/trinity-bytes/omarchy-lock-keys-osd.git}
+    - {id: omarchy-wireless-display,                     tag: laptop,   url: https://github.com/alchemy/omarchy-wireless-display.git}
+    - {id: aaron.power,                                  tag: laptop,   local: true}
+    # T1-only (desktop) plugins, kept as optional.
+    - {id: aaron.agents,                                 tag: optional, local: true}
+    - {id: io.github.ilkaydnc.omargb,                    tag: optional, url: https://github.com/ilkaydnc/omargb.git}
+    - {id: io.github.ncr.omaphones,                      tag: optional, url: https://github.com/ncr/omarchy-headphones}
+    - {id: io.github.rizmi.divider,                      tag: optional, url: https://github.com/Rizmi/omarchy-divider-plugin.git}
+    - {id: io.github.rizmi.temperature,                  tag: optional, url: https://github.com/Rizmi/omarchy-temperature-plugin.git}
+    - {id: pretty.omagen,                                tag: optional, url: https://github.com/prettyletto/omagen.git}
+    # Same product, different upstream than T2's grichard99 fork. T2's is core; this is the alternative.
+    - {id: io.github.iamfitsum.omarchy-proton-vpn,       tag: optional, url: https://github.com/iamfitsum/omarchy-proton-vpn.git}

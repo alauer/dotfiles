@@ -1,0 +1,57 @@
+{{- if not (includeTemplate "is-arch" .) -}}
+#!/bin/sh
+# Not an Arch-family system: package script is a no-op (apt/dnf lists are future work).
+exit 0
+{{- else -}}
+#!/usr/bin/env bash
+# Installs the package groups in .chezmoidata/packages.yaml that apply to this machine.
+# Idempotent (--needed). Runs only on `chezmoi apply`; never run on a live machine.
+# list hash: {{ .packages | toJson | sha256sum }}
+set -euo pipefail
+
+# Opt-in guard: installs only when explicitly requested (fresh-machine bootstrap).
+# An accidental `chezmoi apply` on a live machine therefore cannot touch packages/plugins.
+if [ "${CHEZMOI_INSTALL:-0}" != "1" ]; then
+  echo "packages: skipped (set CHEZMOI_INSTALL=1 to run; bootstrap only)" >&2
+  exit 0
+fi
+
+repo=()
+aur=()
+{{- $omarchy := includeTemplate "is-omarchy" . }}
+{{- $laptop  := includeTemplate "is-laptop" . }}
+{{- $intel   := includeTemplate "is-intel" . }}
+{{- range $name, $g := .packages.arch }}
+{{- $on := false }}
+{{- if eq $g.when "always" }}{{ $on = true }}{{ end }}
+{{- if and (eq $g.when "omarchy") $omarchy }}{{ $on = true }}{{ end }}
+{{- if and (eq $g.when "laptop") $laptop }}{{ $on = true }}{{ end }}
+{{- if and (eq $g.when "intel") $intel }}{{ $on = true }}{{ end }}
+{{- if and $on (not (get $g "provided" | default false)) }}
+# group: {{ $name }}
+{{- range $g.repo }}
+repo+=({{ . | quote }})
+{{- end }}
+{{- range $g.aur }}
+aur+=({{ . | quote }})
+{{- end }}
+{{- end }}
+{{- end }}
+
+# Only install what is missing, so a re-run after a partial failure is cheap.
+missing_repo=(); for p in "${repo[@]}"; do pacman -Qq "$p" >/dev/null 2>&1 || missing_repo+=("$p"); done
+missing_aur=();  for p in "${aur[@]}";  do pacman -Qq "$p" >/dev/null 2>&1 || missing_aur+=("$p"); done
+
+if ((${#missing_repo[@]})); then
+  echo "pacman: installing ${#missing_repo[@]} package(s)"
+  sudo pacman -S --needed "${missing_repo[@]}"
+fi
+if ((${#missing_aur[@]})); then
+  if ! command -v yay >/dev/null 2>&1; then
+    echo "yay not found; cannot install AUR packages: ${missing_aur[*]}" >&2; exit 1
+  fi
+  echo "yay: installing ${#missing_aur[@]} package(s)"
+  yay -S --needed "${missing_aur[@]}"
+fi
+echo "packages: up to date"
+{{- end }}

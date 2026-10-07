@@ -1,0 +1,78 @@
+# Package intent for the portable baseline. Seeded from tachikoma-2 (2026-10-07),
+# curated by hand: every explicitly installed package is in exactly one group.
+# Consumed by .chezmoiscripts/run_onchange_after_10-packages.sh.tmpl (apply only).
+#
+# Groups are gated by `when`:
+#   always   - every Arch-family machine
+#   omarchy  - only where Omarchy is installed (/usr/share/omarchy exists)
+#   laptop   - only on portable chassis (see .chezmoitemplates/is-laptop)
+#   intel    - only where the CPU is GenuineIntel
+# `provided: true` groups are listed for documentation and are NOT installed by the
+# script (the Omarchy installer owns them). `aur` entries need yay.
+packages:
+  arch:
+    cli:
+      when: always
+      repo: [age, vulkan-tools, bash-completion, bat, chezmoi, dua-cli, eza, fastfetch, fd, fzf, git,
+             inetutils, inotify-tools, inxi, jq, lazydocker, lazygit, less, man-db,
+             mise-bin, plocate, qrencode, ripgrep, socat, starship, sudo, tldr, tmux,
+             tree-sitter-cli, usbutils, whois, yt-dlp, zoxide, clang, llvm, lua51,
+             luarocks, ruby, python-gobject, python-poetry-core, expac, pacman-contrib]
+      aur:  []
+    services:
+      when: always
+      repo: [1password, 1password-cli, docker, docker-buildx, docker-compose, tailscale,
+             networkmanager, ufw, ufw-docker, cups, cups-filters, cups-pk-helper,
+             system-config-printer, bluez, bluez-tools, bluez-utils, bolt, udiskie,
+             power-profiles-daemon, zram-generator, tzupdate, wireless-regdb, nss-mdns,
+             proton-vpn-cli, qemu-user-static-binfmt]
+      aur:  []
+    desktop:
+      when: omarchy
+      repo: [hyprland, hyprland-guiutils, hyprpicker, hyprsunset, hyprland-preview-share-picker,
+             xdg-desktop-portal-gtk, xdg-desktop-portal-hyprland, xdg-terminal-exec,
+             quickshell, uwsm, sddm, grim, slurp, wl-clipboard, wtype, gpu-screen-recorder,
+             brightnessctl, ddcutil, asdcontrol, pamixer, alsa-utils, libpulse,
+             pipewire, pipewire-alsa, pipewire-jack, pipewire-pulse, wireplumber,
+             gst-plugin-pipewire, fcitx5, fcitx5-gtk, fcitx5-qt, gnome-keyring,
+             gnome-themes-extra, yaru-icon-theme, qt6-imageformats, gvfs-mtp, gvfs-nfs,
+             gvfs-smb, nautilus, nautilus-python, sushi, gnome-disk-utility, evince,
+             imv, mpv, mpv-mpris, pinta, xournalpp, kdenlive, obs-studio, obsidian,
+             libreoffice-fresh, chromium, telegram-desktop, spotify, steam, moonlight-qt,
+             localsend, foot, ghostty, kitty, imagemagick, libvips, ffmpegthumbnailer,
+             tesseract, tesseract-data-eng, zbar, cliamp, herdr, hermes-desktop,
+             voxtype-bin, aether, libyaml, dotnet-runtime, lib32-vulkan-icd-loader,
+             mariadb-libs, postgresql-libs, noto-fonts, noto-fonts-cjk, noto-fonts-emoji,
+             ttf-ia-writer, ttf-jetbrains-mono-nerd-basic, woff2-font-awesome]
+      aur:  [bibata-cursor-theme, waycast-bin, doubletake-alchemy-bin, qmd]
+    omarchy_apps:
+      when: omarchy
+      repo: [omacalc, omacut, omawrite, tensaku, ttfx, usage, tobi-try,
+             omarchy-nvim]
+      aur:  [omanta, omashow]   # foreign to the sync dbs on both machines
+    omarchy_provided:          # installed by the Omarchy ISO/installer; documentation only
+      when: omarchy
+      provided: true
+      repo: [base, base-devel, linux-firmware, linux-omarchy, linux-omarchy-headers,
+             mkinitcpio, kernel-modules-hook, limine, efibootmgr, btrfs-progs, dosfstools,
+             exfatprogs, omarchy, omarchy-keyring, omarchy-settings, yay]
+      aur:  []
+    laptop:
+      when: laptop
+      repo: [fprintd, thermald, libfprint-git]   # libfprint-git is in the omarchy repo
+      aur:  []
+    intel:
+      when: intel
+      repo: [intel-media-driver, intel-ucode, vulkan-intel, lib32-vulkan-intel,
+             vpl-gpu-rt, intel-gpu-tools, sof-firmware, intel-lpmd]
+      aur:  []
+
+# Deliberately NOT listed (seen on a machine, not baseline):
+#   T2: btop-intel-git (btop defaults are fine, not managed)
+#   T1: amd/rocm/gaming stack (amd-ucode, vulkan-radeon, rocm-*, gamemode, mangohud,
+#       gamescope, openrgb, lemonade-server, python-pytorch-rocm), hypridle (removed:
+#       removed on purpose), discord, google-chrome, sublime-text-4, visual-studio-code-bin,
+#       bun/npm/node-gyp/python-pip/python-pipx/stylua/shfmt/ast-grep/tectonic,
+#       catppuccin-cursors-* (cursor is Bibata, global), sonic-pi, timg, imgcat, rtk,
+#       neovim-symlinks, seahorse, mtr, ldns, toolbox, goverlay, openai-codex-desktop.
+#   Add any of these to a group above if they become baseline.
