@@ -1,0 +1,1 @@
+{{- if and (eq .chezmoi.os "linux") (has "arch" (list (.chezmoi.osRelease.id | default "") (.chezmoi.osRelease.idLike | default ""))) -}}true{{- end -}}

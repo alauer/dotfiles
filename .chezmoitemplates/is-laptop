@@ -1,0 +1,4 @@
+{{- /* true on portable chassis (DMI types 8 Portable, 9 Laptop, 10 Notebook, 14 Sub-Notebook, 31 Convertible, 32 Detachable); empty otherwise. Linux only. */ -}}
+{{- if and (eq .chezmoi.os "linux") (stat "/sys/class/dmi/id/chassis_type") -}}
+{{- if has (include "/sys/class/dmi/id/chassis_type" | trim) (list "8" "9" "10" "14" "31" "32") -}}true{{- end -}}
+{{- end -}}

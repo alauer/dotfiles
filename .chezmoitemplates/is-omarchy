@@ -1,0 +1,1 @@
+{{- if and (eq .chezmoi.os "linux") (stat "/usr/share/omarchy") -}}true{{- end -}}
