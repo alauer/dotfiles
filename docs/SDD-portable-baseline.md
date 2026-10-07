@@ -261,7 +261,7 @@ destroy, but the apply remains an explicit decision, rehearsed first in a VM/dev
 | R2 | Package scripts cannot be fully exercised without an apply | devcontainer/VM rehearsal is mandatory before any real run |
 | R3 | T1 (5 commits behind, dirty `.chezmoiignore`) must be reconciled before first push, not after | old SDD §10 |
 | R4 | Public repo: package lists/plugin IDs leak preferences | curate; keep anything sensitive out |
-| R5 | **Pre-commit hook.** The gate at `.githooks/pre-commit` was inert until 2026-10-07 (`core.hooksPath` was unset, so git skipped it and every commit bypassed the gate silently). Now set locally to `.githooks`. **A fresh clone must re-run `git config core.hooksPath .githooks`** or the gate is dead again. Observed after wiring: `run_onchange_` scripts did not appear in `chezmoi diff`, so the anticipated conflict did not materialize. | wired 2026-10-07 |
+| R5 | **Pre-commit hook.** The gate at `.githooks/pre-commit` was inert until 2026-10-07 (`core.hooksPath` was unset, so git skipped it and every commit bypassed the gate silently). Now set locally to `.githooks`. **A fresh clone starts with a dead gate** (git does not track `.git/config`), so `.chezmoiscripts/run_after_00-arm-hooks-path.sh.tmpl` re-arms it on every `chezmoi apply` — a plain `run_`, not `run_onchange_`, because chezmoi's script state lives outside the source dir and a re-clone would not invalidate a hash. Observed after wiring: `run_onchange_` scripts did not appear in `chezmoi diff`, so the anticipated conflict did not materialize. | wired 2026-10-07 |
 
 ## 11. Non-goals
 

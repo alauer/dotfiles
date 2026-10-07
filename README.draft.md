@@ -76,7 +76,11 @@ in the per-host `~/.env`.
 # ~/.config/chezmoi/key.txt (chmod 600); tailscale/GitHub SSH access.
 
 sh -c "$(curl -fsLS chezmoi.io/get)" -- init --apply git@github.com:alauer/dotfiles.git
-git -C ~/.local/share/chezmoi config core.hooksPath .githooks   # arm the drift gate
+# The apply arms the drift gate itself: `.chezmoiscripts/run_after_00-arm-hooks-path`
+# sets core.hooksPath=.githooks on every apply. Git cannot track .git/config, so
+# without this a fresh clone silently skips the pre-commit hook.
+# Belt-and-braces if you ever skip the script:
+git -C ~/.local/share/chezmoi config core.hooksPath .githooks
 ```
 
 First apply prompts for `name`, `email`, `githubUsername` (cached afterwards via

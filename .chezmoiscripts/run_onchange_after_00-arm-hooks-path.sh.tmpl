@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Arms the repo's drift gate.
+#
+# The pre-commit hook (.githooks/pre-commit) blocks a commit when `chezmoi diff`
+# is non-empty, but git only runs it when core.hooksPath points at .githooks.
+# That setting lives in .git/config, which git does not track, so every fresh
+# clone starts with a DEAD gate that fails silently (found 2026-10-07: it had
+# never been wired, so earlier commits proved nothing about drift).
+#
+# On a fresh machine chezmoi has no recorded hash for this script, so it runs
+# during bootstrap and arms the gate without anyone remembering a manual step.
+# Afterwards it is a no-op unless this file changes.
+#
+# It is a run_onchange_, not a plain run_: chezmoi's script state lives in
+# ~/.config/chezmoi/chezmoistate.boltdb, OUTSIDE the source dir, so this stays
+# quiet once run. The one case it does not cover is re-cloning the dotfiles repo
+# on a machine that already has state (new .git/config, same recorded hash) --
+# set it by hand there: git -C <repo> config core.hooksPath .githooks
+#
+# Idempotent and quiet: it writes only when the value is wrong.
+set -euo pipefail
+
+repo="{{ .chezmoi.sourceDir }}"
+
+if ! git -C "$repo" rev-parse --git-dir >/dev/null 2>&1; then
+  echo "hooks-path: $repo is not a git checkout; drift gate NOT armed" >&2
+  exit 0
+fi
+
+if [ "$(git -C "$repo" config --get core.hooksPath || true)" != ".githooks" ]; then
+  git -C "$repo" config core.hooksPath .githooks
+  echo "hooks-path: armed the drift gate (core.hooksPath=.githooks)" >&2
+fi
+
+exit 0

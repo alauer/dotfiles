@@ -18,8 +18,10 @@ future hosts. Read `docs/SDD-portable-baseline.md` before any structural change
    `chezmoi diff` shows drift. Fix the drift (re-add, host-gate, or ignore with
    reason) — do not bypass with `--no-verify` and do not extend its exclusion list.
    It lives at `.githooks/pre-commit` and runs ONLY if `core.hooksPath` points there;
-   an unwired hook fails silently. Verify with `git config --get core.hooksPath` and set
-   it on any fresh clone: `git config core.hooksPath .githooks`.
+   an unwired hook fails silently. `.chezmoiscripts/run_after_00-arm-hooks-path` arms it
+   on every `chezmoi apply`, so a fresh clone self-heals at bootstrap. Verify with
+   `git config --get core.hooksPath` (must be `.githooks`); set it by hand only if you
+   skipped the script: `git config core.hooksPath .githooks`.
 4. **The repo is PUBLIC.** Never commit secrets, tokens, internal IPs, tailnet
    hostnames-with-credentials, or private keys. Secrets go through age
    (`chezmoi add --encrypt` → `encrypted_*.age`) or the per-host `~/.env` pattern
