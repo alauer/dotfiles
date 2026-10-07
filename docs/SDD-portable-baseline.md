@@ -113,6 +113,10 @@ consumes them:
 
 - Themes are **git repos**: `omarchy theme install <url>` clones into
   `~/.config/omarchy/themes/<name>`; a theme has `colors.toml`, backgrounds, etc.
+  A **repo-cloned** theme is filtered when it is staged: `*.lua`, `alacritty.toml`,
+  `foot.ini`, `ghostty.conf`, `kitty.conf` and `vscode.json` are dropped
+  (`omarchy-theme-set:30,138-145`, gated on `! -L $source && -d $source/.git`).
+  A **symlinked or hand-written** theme dir is not filtered — every file is staged.
 - `omarchy theme set <name>` renders templates: user `~/.config/omarchy/themed/*.tpl`
   take priority over `/usr/share/omarchy/default/themed/*.tpl`, substituting
   `colors.toml` keys. Output lands in `~/.local/state/omarchy/current/next-theme/`.
@@ -123,8 +127,13 @@ consumes them:
 
 ### 5.2 Design
 
-- The theme is its own repo (e.g. `tachikoma-theme`). Chezmoi does not re-implement
-  theming. The base repo contributes only the small glue the native system lacks.
+- Themes live in **one private repo, `alauer/omarchy-themes`** (cloned to
+  `~/Projects/omarchy-themes`): one top-level directory per theme, symlinked into
+  `~/.config/omarchy/themes/<name>` by its `link.sh`. Chezmoi does not re-implement
+  theming; the base repo contributes only the small glue the native system lacks.
+  The symlink is deliberate — it keeps the repo the single source of truth **and**
+  bypasses the install-denylist in §5.1, so `batou-sakura` and `retro-wife-usa` keep
+  their `hyprland.lua`, `alacritty.toml`, terminal configs and `vscode.json`.
 - **Starship: palette follows the theme via one Omarchy user template** — *primary route,
   adopted 2026-10-07.* A single base-repo file, `~/.config/omarchy/themed/starship.toml.tpl`
   (chezmoi source `dot_config/omarchy/themed/starship.toml.tpl.tmpl`), is rendered by
@@ -167,18 +176,26 @@ consumes them:
   overrides the template. Git-installed themes are filtered by a denylist
   (`alacritty.toml foot.ini ghostty.conf kitty.conf vscode.json`, plus any `*.lua`);
   `starship.toml` is **not** on it, so it passes.
-- **Delivery of the theme itself:** a one-time `omarchy theme install <repo-url>` in the
-  bootstrap (network, so not during routine apply). Do **not** use a `git-repo`
-  `.chezmoiexternal` as the primary route: that would pull on every apply, which collides
-  with the never-apply rule and duplicates what `omarchy theme install/update` already do.
-- Note: a git-installed theme cannot ship `*.lua`, so the tachikoma theme's `hyprland.lua` would be ignored once it is installed from a repo rather than written locally (local dirs without `.git` are not filtered).
+- **Delivery of the theme itself:** clone `alauer/omarchy-themes` (private) and run its
+  `link.sh` — a bootstrap step, not a routine apply. Do **not** use a `git-repo`
+  `.chezmoiexternal`: that pulls on every apply, colliding with the never-apply rule.
+  Native `omarchy theme install <url>` is **not** used for our own themes: its denylist
+  strips files the themes actually ship (above), and a monorepo is not one-theme-per-repo.
 - The vendored `dot_config/omarchy/themes/jeeves-cyber-mesh/` was **removed 2026-10-07**
   (`chezmoi forget --force`; the live copy under `~/.config/omarchy/themes/` is untouched).
-  Other local themes (`tachikoma`, etc.) likewise belong in a theme repo.
-- **The theme repo is shareable (Q2, 2026-10-07).** So a theme must ship no personal
-  artwork or household names: the `jeeves-cyber-mesh` README symlinked into
-  `~/Pictures/` and named the household, which is exactly what a public theme repo
-  cannot carry. The base may assume an installable theme repo by URL.
+  The live themes are now **symlinks** into `alauer/omarchy-themes`.
+- **The theme repo is PRIVATE (Q2 superseded 2026-10-07).** It carries personal artwork
+  that must not be publishable, so neither this base repo nor any public repo may carry
+  those files. The earlier "shareable/public" answer was wrong for our content. The base
+  therefore does **not** assume an installable theme repo by URL; it assumes a private
+  clone plus `link.sh`.
+- **Related hazard, 2026-10-07:** the `settings-sync` plugin backs up
+  `~/.config/omarchy/themes/*` into `themes-custom/` of `alauer/omarchy-config-laptop`
+  (`cp -r`, which *preserves* a symlink rather than dereferencing it). That repo was
+  public and had therefore published personal artwork; it is now **private** and must
+  stay private. Never re-publicise it. Note also that with themes now symlinked, that
+  backup stores symlinks, so a restore there yields links to this repo rather than
+  standalone copies.
 
 ### 5.3 Where today's held drift lands
 
@@ -215,7 +232,7 @@ sh -c "$(curl -fsLS chezmoi.io/get)" -- init git@github.com:alauer/dotfiles.git 
 chezmoi diff        # REVIEW. A fresh machine has no drift to lose; still review.
 # 1. Aaron decides to apply (on a fresh machine, where nothing exists to overwrite)
 # 2. Packages/plugins scripts run as part of that apply ONLY with CHEZMOI_INSTALL=1 (idempotent)
-# 3. omarchy theme install <theme-repo>; omarchy theme set <name>
+# 3. git clone <private> alauer/omarchy-themes -> ~/Projects/omarchy-themes; ./link.sh; omarchy theme set <name>
 # 4. Create ~/.env from env.example; verify: chezmoi diff empty, chezmoi doctor clean
 ```
 
@@ -230,9 +247,9 @@ destroy, but the apply remains an explicit decision, rehearsed first in a VM/dev
 - **Phase 1 (platform data, DONE):** platform gates as `.chezmoitemplates/is-*` partials (no data block needed). Converted
   `input.lua`/`bindings.lua` to `.tmpl` with the laptop gate; `git/config` template.
 - **Phase 2 (packages/plugins, DONE):** `.chezmoidata/{packages,omarchy}.yaml` + two `run_onchange_after_` scripts. Rendered under 4 simulated platforms (Omarchy laptop, Omarchy desktop, plain Arch, non-Arch) and `bash -n` checked. `shellcheck` is not installed here, so it has NOT been run.
-- **Phase 3 (theme split):** starship glue done (V2); vendored `jeeves-cyber-mesh`
-  dropped 2026-10-07. Remaining: publish `tachikoma` and the rest to the (shareable)
-  theme repo and install them by URL.
+- **Phase 3 (theme split, DONE 2026-10-07):** starship glue done (V2); vendored
+  `jeeves-cyber-mesh` dropped; all 5 custom themes published to the private monorepo
+  `alauer/omarchy-themes` and symlinked into place (V7).
 - **Phase 4 (rehearsal):** devcontainer with an Arch-family image: full bootstrap,
   including a non-Omarchy run to prove the gates.
 - **Phase 5 (docs & skill):** swap in README, finalize AGENTS.md, refresh the `chezmoi`
@@ -247,6 +264,7 @@ destroy, but the apply remains an explicit decision, rehearsed first in a VM/dev
 | V3 | Hyprland version where Lua config starts; what does an older distro package ship? | Hyprland changelog / `hyprland --version` |
 | V4 | **Resolved by reading:** `omarchy plugin add <git-url> --enable --yes`, `list --json` is machine-readable, so the script checks `list --json` before adding. Not yet run (apply-only). | rehearsal |
 | V5 | Do all 8 drifting files render identically on T2 once converted? | `chezmoi diff` empty on T2 |
+| V7 | **Resolved 2026-10-07:** private monorepo `alauer/omarchy-themes` built — all 5 themes byte-identical local vs remote (74 blobs, 42,721,848 B, same SHA); symlinked into `~/.config/omarchy/themes` with content hashes re-verified through the links; staging simulated for the worst case (`batou-sakura`): 30/30 files staged *including* `hyprland.lua`, `alacritty.toml`, `kitty.conf`, `ghostty.conf`, `vscode.json`. | closed |
 | V6 | **Resolved by rehearsal (2026-10-07):** theme-aware starship template — the real `omarchy-theme-set-templates` in a sandbox `HOME` resolved the tokens from `colors.toml`; a theme shipping its own `starship.toml` kept its palette (override wins); `starship prompt` parsed the rendered output (exit 0). | closed |
 
 ## 10. Risks & open questions
@@ -254,7 +272,7 @@ destroy, but the apply remains an explicit decision, rehearsed first in a VM/dev
 | # | Item | Mitigation / owner |
 |---|---|---|
 | Q1 | ~~Package list: seed or curate?~~ **Resolved:** seeded from T2, hand-curated into groups (section 4). | done |
-| Q2 | ~~Theme repo audience~~ **Resolved 2026-10-07: shareable.** Base may assume an installable theme repo by URL; themes carry no personal artwork or household names. | done |
+| Q2 | ~~Theme repo audience~~ **Resolved 2026-10-07, superseded same day: PRIVATE.** `alauer/omarchy-themes` — a private monorepo with symlink delivery; it carries personal artwork, so it is not shareable and the base must not assume a URL-installable theme repo. | done |
 | Q3 | ~~Age key provisioning~~ **Resolved 2026-10-07:** reuse the existing password-protected age key chezmoi already holds. No separate design. | done |
 | Q4 | Non-Arch support (apt/dnf): structure the data for it now, implement later? | default: structure only |
 | R1 | Omarchy renames/moves theme internals (the hook/template contract is Omarchy's, not ours) | V2 + version pin in docs |
