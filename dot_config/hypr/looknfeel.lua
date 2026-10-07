@@ -13,6 +13,15 @@
 --   },
 -- })
 
+-- Tighter window gaps, a global preference across all themes (about 30% under
+-- Omarchy's defaults of 5 / 10). Hyprland gaps are whole pixels: 3.5 lands on 3.
+hl.config({
+  general = {
+    gaps_in = 3,
+    gaps_out = 7,
+  },
+})
+
 -- https://wiki.hypr.land/Configuring/Basics/Variables/#decoration
 hl.config({
   decoration = {
@@ -48,3 +57,11 @@ hl.config({
 --     column_width = 0.97,
 --   },
 -- })
+
+-- Cursor theme, a global preference across all themes: Bibata Modern Ice.
+-- Read by Hyprland at startup, so it belongs here, not in a theme.
+-- Needs the AUR package `bibata-cursor-theme`.
+hl.env("XCURSOR_THEME", "Bibata-Modern-Ice")
+hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Ice")
+hl.env("XCURSOR_SIZE", "28")
+hl.env("HYPRCURSOR_SIZE", "28")
