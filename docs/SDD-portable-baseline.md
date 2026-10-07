@@ -132,7 +132,7 @@ consumes them:
   `~/.config/omarchy/themes/<name>` by its `link.sh`. Chezmoi does not re-implement
   theming; the base repo contributes only the small glue the native system lacks.
   The symlink is deliberate — it keeps the repo the single source of truth **and**
-  bypasses the install-denylist in §5.1, so `batou-sakura` and `retro-wife-usa` keep
+  bypasses the install-denylist in §5.1, so the richer themes keep
   their `hyprland.lua`, `alacritty.toml`, terminal configs and `vscode.json`.
 - **Starship: palette follows the theme via one Omarchy user template** — *primary route,
   adopted 2026-10-07.* A single base-repo file, `~/.config/omarchy/themed/starship.toml.tpl`
