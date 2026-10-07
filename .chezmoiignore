@@ -135,3 +135,21 @@ darwin
 # Host-local environment (per-machine secrets/config; sourced by dot_bashrc.tmpl)
 # ============================================================================
 .env
+
+# ============================================================================
+# Repo-only files: docs & agent rules (never deployed to $HOME)
+# See docs/SDD-portable-baseline.md; .hermes excluded by decision
+# ============================================================================
+docs
+AGENTS.md
+README.draft.md
+.hermes
+
+# btop: defaults are fine, not managed (Aaron, 2026-10-07)
+.config/btop
+
+# Per-host, not managed (Aaron, 2026-10-07):
+# shell.json: bar plugin sets differ by machine and Omarchy edits it via omarchy-shell-config.
+# screensaver.txt: T1 has stock art, T2 has custom braille art.
+.config/omarchy/shell.json
+.config/omarchy/branding/screensaver.txt
