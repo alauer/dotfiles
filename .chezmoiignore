@@ -136,6 +136,7 @@ darwin
 # ============================================================================
 .env
 
+<<<<<<< Updated upstream
 # ============================================================================
 # Repo-only files: docs & agent rules (never deployed to $HOME)
 # See docs/SDD-portable-baseline.md; .hermes excluded by decision
@@ -153,3 +154,7 @@ README.draft.md
 # screensaver.txt: T1 has stock art, T2 has custom braille art.
 .config/omarchy/shell.json
 .config/omarchy/branding/screensaver.txt
+=======
+# systemd user environment (not tracked by chezmoi)
+.config/environment.d/
+>>>>>>> Stashed changes
